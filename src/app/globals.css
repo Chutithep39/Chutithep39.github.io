@@ -1,26 +1,258 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/*  THEME LIFTED FROM STRATEGY LAB (Strategy Lab/frontend/app/globals.css) so
+    this site and the tool it talks about read as one thing. Values are COPIED,
+    not approximated — if the lab's palette moves, move it here too.
+    The lab ships dark only, so this does too: one deliberate visual world
+    rather than a light mode nobody designed.                                */
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-secondary: var(--secondary);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-accent: var(--accent);
+  --color-destructive: var(--destructive);
+  --color-pnl-pos: var(--pnl-pos);
+  --color-pnl-neg: var(--pnl-neg);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --font-sans: var(--font-sans);
   --font-mono: var(--font-geist-mono);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+:root {
+  --background: #081028;
+  --foreground: #ffffff;
+  --card: #0b1739;
+  --card-foreground: #ffffff;
+  --primary: #cb3cff;
+  --primary-foreground: #ffffff;
+  --secondary: #1a2241;
+  --muted: #1a2241;
+  --muted-foreground: #aeb9e1;
+  --accent: #1a2241;
+  --destructive: #ff5a65;
+  --border: rgba(255, 255, 255, 0.08);
+  --input: rgba(255, 255, 255, 0.1);
+  --ring: #cb3cff;
+  --chart-1: #cb3cff;
+  --chart-2: #00c2ff;
+  --chart-3: #05c168;
+  --chart-4: #ff5a65;
+  --chart-5: #7f25fb;
+  --pnl-pos: #05c168;
+  --pnl-neg: #ff5a65;
+  --grad-from: #cb3cff;
+  --grad-to: #7f25fb;
+  --radius: 0.625rem;
+}
+
+.grad-primary {
+  background: linear-gradient(135deg, var(--grad-from) 20%, var(--grad-to) 68%);
+}
+.grad-primary-text {
+  background: linear-gradient(135deg, var(--grad-from) 20%, var(--grad-to) 68%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+  html {
+    font-family: var(--font-sans), system-ui, sans-serif;
+    /*  Without the padding an anchor lands UNDER the sticky header.         */
+    scroll-behavior: smooth;
+    scroll-padding-top: 5.5rem;
+  }
+  body {
+    background: var(--background);
+    color: var(--foreground);
+  }
+  ::selection {
+    background: color-mix(in oklab, var(--primary) 35%, transparent);
+  }
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/*  SCROLL-REVEAL
+ *
+ *  The research page is long and its charts need reading rather than glancing
+ *  at. Motion here is a pacing device, not decoration: each block arrives as
+ *  it reaches the viewport, which gives the eye somewhere to land and makes a
+ *  2,000px page feel like a sequence of five things instead of one wall.
+ *
+ *  Everything is ONE-SHOT and short. Nothing loops, nothing moves while it is
+ *  being read, and all of it is off under prefers-reduced-motion.
+ */
+/*  Hidden ONLY once the client has mounted and can un-hide it. Without the
+    `.anim` guard, a reader whose JS has not run — or whose observer never
+    fires — gets a page of empty sections, which is a far worse failure than
+    missing an animation.                                                   */
+.anim .reveal {
+  opacity: 0;
+  transform: translateY(14px);
+}
+.reveal.is-in {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/*  A line that draws itself. The dash length is deliberately larger than any
+    path on the page — measuring each one would mean reading geometry back out
+    of the DOM for a purely visual effect.                                   */
+.draw-line {
+  stroke-dasharray: 8000;
+  stroke-dashoffset: 8000;
+}
+.is-in .draw-line {
+  animation: draw-line 1.9s cubic-bezier(0.33, 1, 0.68, 1) forwards;
+}
+@keyframes draw-line {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/*  Bars grow out of their own baseline. `transform-box: fill-box` is what
+    makes a percentage transform-origin mean the bar rather than the canvas. */
+.grow-up,
+.grow-down {
+  transform-box: fill-box;
+  transform: scaleY(0);
+}
+.grow-up {
+  transform-origin: bottom;
+}
+.grow-down {
+  transform-origin: top;
+}
+.is-in .grow-up,
+.is-in .grow-down {
+  animation: grow 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+@keyframes grow {
+  to {
+    transform: scaleY(1);
+  }
+}
+
+/*  Labels and markers arrive after the thing they label.                    */
+.fade-late {
+  opacity: 0;
+}
+.is-in .fade-late {
+  animation: fade-late 0.5s ease forwards;
+  animation-delay: 0.55s;
+}
+@keyframes fade-late {
+  to {
+    opacity: 1;
+  }
+}
+
+/*  The one or two numbers a section exists to deliver. Three pulses, then it
+    stops and stays put — a permanently blinking cell is unreadable.        */
+.is-in .pulse {
+  animation: pulse 1.5s ease-in-out 3;
+  animation-delay: 0.6s;
+}
+@keyframes pulse {
+  50% {
+    box-shadow: 0 0 0 2px color-mix(in oklab, var(--chart-4) 70%, transparent);
+  }
+}
+
+/*  ⚠ `animation` is a single shorthand per element: a rule that sets it LAST
+    replaces whatever an earlier rule set, it does not add to it. An element
+    carrying both `.grow-up` and `.flare` therefore lost its grow animation
+    and stayed at scaleY(0) — the two tail bars vanished entirely. Anything
+    that needs both has to name both in one declaration.                    */
+.is-in .grow-up.flare {
+  animation:
+    grow 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards,
+    flare 1.6s ease-in-out 0.9s 3;
+}
+.is-in .grow-down.flare {
+  animation:
+    grow 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards,
+    flare 1.6s ease-in-out 0.9s 3;
+}
+.is-in .fade-late.flare {
+  animation:
+    fade-late 0.5s ease 0.55s forwards,
+    flare 1.6s ease-in-out 1.1s 3;
+}
+.is-in .draw-line.flare {
+  animation:
+    draw-line 1.9s cubic-bezier(0.33, 1, 0.68, 1) forwards,
+    flare 1.6s ease-in-out 2.2s 3;
+}
+.is-in .pulse.flare {
+  animation:
+    pulse 1.5s ease-in-out 0.6s 3,
+    flare 1.6s ease-in-out 0.6s 3;
+}
+
+/*  The two buckets the whole chart is about. They glow after the bars have
+    finished growing, loop a few times, then settle — long enough to pull the
+    eye to the tails, short enough that the chart can still be read.        */
+.is-in .flare {
+  animation: flare 1.6s ease-in-out 3;
+  animation-delay: 0.9s;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+@keyframes flare {
+  50% {
+    filter: drop-shadow(0 0 10px currentColor) brightness(1.35);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .reveal,
+  .reveal.is-in {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .draw-line,
+  .grow-up,
+  .grow-down,
+  .fade-late {
+    stroke-dashoffset: 0;
+    transform: none;
+    opacity: 1;
+    animation: none;
+  }
+  .is-in .pulse,
+  .is-in .flare {
+    animation: none;
+  }
 }

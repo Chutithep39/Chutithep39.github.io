@@ -3,10 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --port 3030",
     "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
+    "start": "next start --port 3030",
+    "lint": "eslint",
+    "sync": "python scripts/export_portfolio.py",
+    "refresh": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/daily_refresh.ps1"
   },
   "dependencies": {
     "next": "16.4.0",

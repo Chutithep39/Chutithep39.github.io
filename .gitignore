@@ -39,3 +39,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# dev-server + refresh logs (regenerated, never useful in history)
+dev.log
+dev.err.log
+server.log
+server.err.log
+refresh.log
