@@ -127,7 +127,7 @@ export function EquityCurve() {
         rebuilds it from each visible day's own change — so dropping a window
         removes that window's P&L and nothing else. Showing "Live" alone
         opening at $194k would contradict its own "+55%", because that 55% is
-        55% of $15k.
+        55% of $10k.
 
         `split` decides where a line BREAKS: the combined reading breaks at
         every window boundary so each window can carry its own colour, the
@@ -199,7 +199,7 @@ export function EquityCurve() {
           }));
 
     //  The baseline splices across a hidden window exactly as the book does —
-    //  the dollar moves of a $15k position, added up over the days on screen.
+    //  the dollar moves of a $10k position, added up over the days on screen.
     //  Over the full history that is buy-and-hold to the cent; under a filter
     //  both sides lose the same days, which is what keeps them comparable.
     if (BENCH) {
@@ -446,7 +446,7 @@ export function EquityCurve() {
         //  the book's running total; the difference across its own span is its
         //  own contribution. A leg's line opens at the starting capital, so
         //  the same subtraction gives that strategy's share. Both are measured
-        //  against the same $15k, which is what lets them be read against each
+        //  against the same $10k, which is what lets them be read against each
         //  other — and what makes the figures on screen sum to the total.
         const open = l.segs[0][0][1];
         return [{

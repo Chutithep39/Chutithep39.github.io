@@ -33,7 +33,7 @@ export const SECTIONS: Section[] = [
     label: "Portfolio Performance",
     eyebrow: "Quantitative trading, 2018-2026",
     blurb:
-      "Performance of a portfolio of eight uncorrelated strategies across five instruments, sized at fixed risk based on $15k initial capital, split into fitted in-sample, out-of-sample, and live.",
+      "Performance of a portfolio of eight uncorrelated strategies across five instruments, sized at fixed risk based on $10k initial capital, split into fitted in-sample, out-of-sample, and live.",
     ready: true,
   },
   {

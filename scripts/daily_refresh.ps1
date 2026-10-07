@@ -1,7 +1,8 @@
 # Nightly refresh of the Results page.
 #
 #   1. pull fresh M1 bars for the symbols portfolio #99 trades
-#   2. re-run each member's ENGINE over that lake and re-export the curve
+#   2. re-run each member's ENGINE over that lake and re-export every figure
+#   3. commit the exported JSON and push, which rebuilds the public site
 #
 # Step 2 is what makes this worth scheduling: the members are stored as
 # `calc_mode=report`, whose trades are frozen at the date their MT5 .html was
@@ -79,6 +80,25 @@ Say "refresh: start ($py)"
 try {
   Run "scripts\refresh_lake.py"
   Run "scripts\export_portfolio.py"
+  Run "scripts\export_baseline.py"
+  Run "scripts\export_backtest.py"
+  Run "scripts\export_candidate_correlation.py"
+
+  # PUBLISH. Re-exporting the JSON only moves the numbers on this machine;
+  # the public site rebuilds from a push. ONLY src/data is committed - a data
+  # refresh must never carry half-finished code onto the live site.
+  $changed = git status --porcelain -- src/data
+  if ($changed) {
+    Say "publishing to GitHub Pages"
+    git add -- src/data
+    $stamp = Get-Date -Format "yyyy-MM-dd"
+    git -c user.name="Chutithep Engmahussakul" -c user.email="chutithep.eng@gmail.com" commit -q -m "Data refresh $stamp"
+    git push -q origin master
+    Say "pushed - Pages rebuilds in about a minute"
+  } else {
+    Say "data unchanged - nothing to publish"
+  }
+
   Say "refresh: done"
 } catch {
   Say "refresh: FAILED - $_"

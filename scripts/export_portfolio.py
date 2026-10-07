@@ -98,7 +98,7 @@ def cost_breakdown(pid: str, scale: float, start: float, through: str,
     """What this member paid to trade, on the SAME basis as its line on the site.
 
     `member_stream` de-compounds each engine trade into `ret = pnl / balance_before`
-    and the site re-sizes that onto $15k. Dividing the COST by the same
+    and the site re-sizes that onto $10k. Dividing the COST by the same
     `balance_before` puts both on one basis, so the figures here are what the
     site's own curve paid — not a ratio borrowed from a differently-sized run.
 
@@ -320,8 +320,8 @@ def main() -> None:
     #  is scale*ret*start, so return %, drawdown %, Calmar and Sharpe are all
     #  identical and only the dollar axis moves. Under compounding it is NOT —
     #  do not pass it with --compounding and expect the same numbers.
-    ap.add_argument("--start", type=float, default=15000.0,
-                    help="capital the curve is drawn on (default 15000)")
+    ap.add_argument("--start", type=float, default=10000.0,
+                    help="capital the curve is drawn on (default 10000)")
     ap.add_argument("--mode", choices=["engine", "report"], default="engine",
                     help="engine: re-run each member over the data lake, so a "
                          "daily sync actually moves. report: the uploaded "
@@ -410,7 +410,7 @@ def main() -> None:
         [pd.Series([start], index=[daily.index[0] - pd.Timedelta(days=1)]), daily])
 
     #  PER-LEG SERIES, on the same daily grid as the combined curve and the
-    #  same $15k base. Each leg's line is its OWN contribution to the book —
+    #  same $10k base. Each leg's line is its OWN contribution to the book —
     #  its scaled P&L, cumulated — so the eight of them add up to the combined
     #  curve exactly. Showing each strategy's standalone run instead would be a
     #  different (and unaddable) chart: these are the shares of one balance.

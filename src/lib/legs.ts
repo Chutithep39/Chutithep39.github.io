@@ -39,7 +39,7 @@ export type Leg = {
     verdict: Level;
   } | null;
   /** Gross, what the broker took, and the net that is plotted — all on the
-      site's $15k fixed-size basis. */
+      site's $10k fixed-size basis. */
   cost: {
     gross: number;
     commission: number;

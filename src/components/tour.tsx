@@ -33,7 +33,7 @@ const STEPS: Step[] = [
     target: "periods",
     title: "Three windows, each one optional",
     body:
-      "In-sample was fitted. Out-of-sample was scored once and never tuned. Click any of them to drop it from the chart — what is left rebases to the same $15k, so the numbers stay comparable.",
+      "In-sample was fitted. Out-of-sample was scored once and never tuned. Click any of them to drop it from the chart — what is left rebases to the same $10k, so the numbers stay comparable.",
     mode: "combined",
   },
   {

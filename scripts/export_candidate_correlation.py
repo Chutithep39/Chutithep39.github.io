@@ -8,7 +8,7 @@ on daily P&L, upper triangle over all days, lower triangle over the portfolio's
 worst 20% of days.
 
 Correlation is scale-invariant, so how the candidate is sized does not matter
-here; it is given the same $15k base as the book legs purely so the daily
+here; it is given the same $10k base as the book legs purely so the daily
 series line up.
 
 ⚠ The worst-20% days are the BOOK's worst days, not the combined book's. The
@@ -36,7 +36,7 @@ from app.services import portfolio_sim as PS  # noqa: E402
 from app.services import ea_profiles_service as EAP  # noqa: E402
 
 PORTFOLIO = "99.Resume Portfolio"
-START = 15000.0
+START = 10000.0
 CANDIDATE = "Dip buy on NASDAQ"
 DD_QUANTILE = 0.20
 
@@ -82,7 +82,7 @@ def book_daily() -> tuple[pd.DataFrame, list[dict]]:
 
 
 def candidate_daily() -> pd.Series:
-    """Daily P&L of the dip-buy rule, on the same $15k base."""
+    """Daily P&L of the dip-buy rule, on the same $10k base."""
     bt = json.loads((HERE / "src" / "data" / "backtest.json").read_text("utf-8"))
     rows = [(pd.Timestamp(p["d"]), p["v"]) for p in bt["curve"] if p["d"]]
     eq = pd.Series([v for _, v in rows], index=[d for d, _ in rows])
