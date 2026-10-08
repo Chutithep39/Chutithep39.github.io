@@ -11,8 +11,13 @@ import { SECTIONS, hrefOf } from "@/lib/sections";
  *  the sections are pages now — the URL already knows where the reader is, and
  *  anything else would be a second source of truth that can disagree with it.
  */
+/*  `trailingSlash: true` means usePathname() reports "/results/" while the
+    section list holds "/results". Comparing them raw matched only Home, so
+    every other page lost its underline. Normalise both ends.             */
+const norm = (p: string) => (p !== "/" && p.endsWith("/") ? p.slice(0, -1) : p);
+
 export function SiteHeader() {
-  const path = usePathname();
+  const path = norm(usePathname());
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-[color-mix(in_oklab,var(--background)_82%,transparent)] backdrop-blur-xl">
@@ -27,13 +32,14 @@ export function SiteHeader() {
         </Link>
 
         <nav
+          data-tour="nav"
           aria-label="Sections"
           className="-mx-2 ml-auto flex min-w-0 items-center gap-0.5 overflow-x-auto px-2
                      [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {SECTIONS.map((s) => {
             const href = hrefOf(s);
-            const on = path === href;
+            const on = path === norm(href);
             return (
               <Link
                 key={s.slug}

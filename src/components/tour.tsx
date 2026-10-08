@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 
 /*  A first-run walkthrough for the page's controls.
  *
@@ -28,7 +28,10 @@ export type Step = {
   mode?: "combined" | "legs";
 };
 
-const STEPS: Step[] = [
+/*  The walkthrough is now mounted on two pages, so the steps come IN rather
+    than being baked in. Everything else — the spotlight, the measuring, the
+    first-visit rule — is identical on both.                               */
+export const RESULTS_STEPS: Step[] = [
   {
     target: "intro",
     title: "What this page is",
@@ -80,37 +83,47 @@ const STEPS: Step[] = [
   },
   {
     target: "next",
-    title: "And how any of this gets decided",
+    title: "And what produced all of it",
     body:
-      "One candidate followed end to end — the claim, the falsifiers, the test, and why a real edge still got thrown away.",
+      "The tool behind these numbers — the data lake, the engine, the parameter search and the portfolio optimiser, in four screens. The full write-up of one candidate follows it.",
     mode: "combined",
   },
 ];
 
-const KEY = "tour.home.v1";
+const RESULTS_KEY = "tour.home.v1";
 const PAD = 10;
 
 type Box = { top: number; left: number; width: number; height: number };
 
-export function Tour() {
+export function Tour({
+  steps = RESULTS_STEPS,
+  storageKey = RESULTS_KEY,
+  label = "How to read this page",
+}: {
+  steps?: Step[];
+  storageKey?: string;
+  label?: string;
+}) {
   const [open, setOpen] = useState(false);
   const [i, setI] = useState(0);
   const [box, setBox] = useState<Box | null>(null);
+  const card = useRef<HTMLDivElement>(null);
+  const [cardH, setCardH] = useState(200);
   const raf = useRef(0);
 
-  const step = STEPS[i];
+  const step = steps[i];
 
   //  Offered rather than forced: it opens itself only on a first visit.
   useEffect(() => {
     const id = requestAnimationFrame(() => {
       try {
-        if (!localStorage.getItem(KEY)) setOpen(true);
+        if (!localStorage.getItem(storageKey)) setOpen(true);
       } catch {
         /* private mode — just don't run */
       }
     });
     return () => cancelAnimationFrame(id);
-  }, []);
+  }, [storageKey]);
 
   const close = useCallback((toTop = false) => {
     setOpen(false);
@@ -118,14 +131,14 @@ export function Tour() {
     //  leaves the reader at the bottom of something they have not read.
     if (toTop) window.scrollTo({ top: 0, behavior: "smooth" });
     try {
-      localStorage.setItem(KEY, "1");
+      localStorage.setItem(storageKey, "1");
     } catch {
       /* ignore */
     }
     window.dispatchEvent(
       new CustomEvent("tour:mode", { detail: "combined" }),
     );
-  }, []);
+  }, [storageKey]);
 
   //  Put the page in the state this step talks about, then measure.
   useEffect(() => {
@@ -175,16 +188,23 @@ export function Tour() {
     };
   }, [open, i, step]);
 
+  //  Re-measure whenever the body changes length; the placement above reads it.
+  useLayoutEffect(() => {
+    if (!open) return;
+    const h = card.current?.offsetHeight;
+    if (h && h !== cardH) setCardH(h);
+  }, [open, i, cardH]);
+
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") close();
-      if (e.key === "ArrowRight") setI((n) => Math.min(n + 1, STEPS.length - 1));
+      if (e.key === "ArrowRight") setI((n) => Math.min(n + 1, steps.length - 1));
       if (e.key === "ArrowLeft") setI((n) => Math.max(n - 1, 0));
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [open, close]);
+  }, [open, close, steps.length]);
 
   if (!open) {
     return (
@@ -196,19 +216,31 @@ export function Tour() {
         }}
         className="fixed bottom-5 right-5 z-40 rounded-full border border-border bg-card/90 px-4 py-2 text-[12px] text-muted-foreground shadow-lg backdrop-blur transition-colors hover:text-foreground"
       >
-        How to read this page
+        {label}
       </button>
     );
   }
 
-  //  Tooltip goes below the spotlight when there is room, above when there is
-  //  not, and is clamped so it never hangs off either edge.
+  /*  Tooltip goes below the spotlight when it FITS below, above when it fits
+      above, and otherwise is pinned inside the viewport.
+
+      The height is measured rather than assumed. The old code assumed 190px,
+      and a step whose body ran to six lines — spotlighting a 700px hero, so
+      "below" looked like it had room — pushed the card and both of its
+      buttons off the bottom of the screen with no way to continue.        */
   const vw = typeof window === "undefined" ? 1200 : window.innerWidth;
   const vh = typeof window === "undefined" ? 800 : window.innerHeight;
   const TW = 360;
-  const below = box ? box.top + box.height + 16 : 0;
-  const placeBelow = box ? below + 190 < vh : true;
-  const top = box ? (placeBelow ? below : Math.max(16, box.top - 206)) : vh / 2 - 100;
+  const GAP = 16;
+  const below = box ? box.top + box.height + GAP : 0;
+  const above = box ? box.top - cardH - GAP : 0;
+  const top = !box
+    ? vh / 2 - cardH / 2
+    : below + cardH + GAP <= vh
+      ? below
+      : above >= GAP
+        ? above
+        : Math.max(GAP, vh - cardH - GAP);
   const left = box
     ? Math.min(Math.max(16, box.left + box.width / 2 - TW / 2), vw - TW - 16)
     : vw / 2 - TW / 2;
@@ -261,11 +293,12 @@ export function Tour() {
       />
 
       <div
+        ref={card}
         className="absolute w-[360px] rounded-xl border border-border bg-card p-5 shadow-2xl transition-all duration-300"
         style={{ top, left }}
       >
         <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
-          {i + 1} of {STEPS.length}
+          {i + 1} of {steps.length}
         </p>
         <h3 className="mt-2 text-[15px] font-semibold tracking-tight">
           {step.title}
@@ -295,11 +328,11 @@ export function Tour() {
             <button
               type="button"
               onClick={() =>
-                i === STEPS.length - 1 ? close(true) : setI(i + 1)
+                i === steps.length - 1 ? close(true) : setI(i + 1)
               }
               className="grad-primary rounded-md px-3 py-1.5 text-[12px] font-medium text-white"
             >
-              {i === STEPS.length - 1 ? "Done" : "Next"}
+              {i === steps.length - 1 ? "Done" : "Next"}
             </button>
           </div>
         </div>

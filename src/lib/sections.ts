@@ -1,4 +1,4 @@
-/*  The site's spine, in one place — two pages, on purpose.
+/*  The site's spine, in one place.
  *
  *  Each section is its OWN ROUTE, not an anchor: a reader who is scanning
  *  wants to open the one thing they care about, and a link they can send to a
@@ -14,9 +14,7 @@
  */
 export type Section = {
   slug: string;
-  /** Where the section actually lives. Only set when it is not `/<slug>` —
-      Portfolio Performance IS the landing page, so it answers on "/" while
-      keeping its slug as the id everything else looks it up by. */
+  /** Where the section actually lives. Only set when it is not `/<slug>`. */
   href?: string;
   label: string;
   /** Says which question the page answers. Shown as the eyebrow. */
@@ -28,12 +26,28 @@ export type Section = {
 
 export const SECTIONS: Section[] = [
   {
-    slug: "results",
+    slug: "home",
     href: "/",
+    label: "Home",
+    eyebrow: "Quantitative trading research",
+    blurb:
+      "What the practice is, how it runs, and what it is built with.",
+    ready: true,
+  },
+  {
+    slug: "results",
     label: "Portfolio Performance",
     eyebrow: "Quantitative trading, 2018-2026",
     blurb:
       "Performance of a portfolio of eight uncorrelated strategies across five instruments, sized at fixed risk based on $10k initial capital, split into fitted in-sample, out-of-sample, and live.",
+    ready: true,
+  },
+  {
+    slug: "strategy-lab",
+    label: "Strategy Lab",
+    eyebrow: "The tooling behind the research",
+    blurb:
+      "The backtest engine, data lake and dashboard I built to run the process — from the raw minute data through to a portfolio sized against one drawdown budget.",
     ready: true,
   },
   {

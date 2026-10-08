@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist_Mono, Work_Sans } from "next/font/google";
 
+import { Analytics } from "@/components/analytics";
 import { SiteHeader } from "@/components/site-header";
 import "./globals.css";
 
@@ -30,6 +31,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <main className="mx-auto max-w-[1400px] px-5 pb-28 sm:px-8">
           {children}
         </main>
+        <Analytics />
       </body>
     </html>
   );
