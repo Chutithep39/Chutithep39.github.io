@@ -495,17 +495,21 @@ def main() -> None:
 
     #  BUY & HOLD BASELINE. The honest question a reader asks of any book is
     #  "versus just owning the index?", so the answer ships with the chart
-    #  rather than waiting to be asked. Full notional: the whole starting
-    #  balance into US500 on day one and never touched, which is the real
-    #  alternative use of the money — not a risk-matched version of it.
+    #  rather than waiting to be asked.
     #
-    #  Plain buy-and-hold: the whole starting balance into US500 on day one
-    #  and never touched, so the position compounds with the price the way it
-    #  would in anyone's account. That is the comparison a reader is making in
-    #  their head anyway, and it needs no explanation on the page.
+    #  SIZED THE SAME WAY THE BOOK IS: $start of notional, held, with each
+    #  day's P&L the index's percentage move on that $start — no compounding,
+    #  because the book does not compound either and the page compares them
+    #  side by side.
     #
-    #  ⚠ It therefore compounds while the book does not — which runs AGAINST
-    #  the book, so the asymmetry is left standing rather than corrected for.
+    #  ⚠ `rel` IS AN EQUITY INDEX, NOT A PRICE RATIO. It used to be
+    #  `price / price[0]`, which is a compounding buy-and-hold curve — right
+    #  for the full span and wrong for every window inside it. The site rebases
+    #  by SUBTRACTING the level at the window's open, so a 2018-based ratio
+    #  handed it each day's move already multiplied by how far the index had
+    #  risen since 2018: the live window's real +4.6% was published as +12.1%.
+    #  Building it as 1 + cumsum(pct_change) makes a difference between any two
+    #  points mean the same thing the book's does — percent of $start.
     bench = None
     try:
         bench_px = (pd.read_parquet(LAB / "data" / "raw" / "US500.parquet",
@@ -513,7 +517,7 @@ def main() -> None:
                     .resample("D").last().ffill().dropna())
         bench_px.index = pd.to_datetime(bench_px.index).tz_localize(None)
         aligned = bench_px.reindex(daily.index, method="ffill").bfill()
-        rel = aligned / aligned.iloc[0]
+        rel = 1.0 + aligned.pct_change().fillna(0.0).cumsum()
         #  Metrics on the SAME basis as the book's — the lab's own bundle with
         #  compounding off, over the same fixed-size series the line draws.
         bpnl = (rel.diff().fillna(0.0) * start).to_numpy()
