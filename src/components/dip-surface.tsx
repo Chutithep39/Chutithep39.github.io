@@ -44,9 +44,17 @@ const PLATEAU = sweep.plateau as {
 const IN_PLATEAU = new Set(PLATEAU.cells.map(([i, j]) => `${i},${j}`));
 const onPlateau = (i: number, j: number) => IN_PLATEAU.has(`${i},${j}`);
 
-/*  "2018–2023" was typed in, and the held-out window grows every night.   */
-const yearSpan = (w: { from: string; to: string }) =>
-  `${w.from.slice(0, 4)}–${w.to.slice(0, 4)}`;
+/*  "2018–2023" was typed in, and the held-out window grows every night.
+ *
+ *  The `to` is EXCLUSIVE — the fitted window ends at the split, 1 Jan 2024,
+ *  and the last year it actually contains is 2023. Slicing the year straight
+ *  off the string labelled it "2018–2024", claiming a year of data the window
+ *  does not hold.                                                          */
+const yearSpan = (w: { from: string; to: string }) => {
+  const end = new Date(`${w.to}T00:00:00Z`);
+  end.setUTCDate(end.getUTCDate() - 1);
+  return `${w.from.slice(0, 4)}–${end.getUTCFullYear()}`;
+};
 
 const MODES: { key: Mode; label: string; sub: string }[] = [
   { key: "is", label: "Fitted", sub: yearSpan(sweep.windows.is) },
