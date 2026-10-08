@@ -29,15 +29,17 @@ export default function Home() {
 
   return (
     <div className="py-14 sm:py-20">
-      <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
-        {meta.eyebrow}
-      </p>
-      <h1 className="mt-2 text-3xl font-semibold tracking-tight text-balance sm:text-4xl">
-        {meta.label}
-      </h1>
-      <p className="mt-4 max-w-3xl text-[15px] leading-relaxed text-muted-foreground">
-        {meta.blurb}
-      </p>
+      <div data-tour="intro">
+        <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+          {meta.eyebrow}
+        </p>
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-balance sm:text-4xl">
+          {meta.label}
+        </h1>
+        <p className="mt-4 max-w-3xl text-[15px] leading-relaxed text-muted-foreground">
+          {meta.blurb}
+        </p>
+      </div>
 
       <div className="mt-10 space-y-12">
         <EquityCurve />
