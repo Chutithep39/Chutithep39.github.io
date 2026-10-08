@@ -54,8 +54,8 @@ const onPlateau = (i: number, j: number) => IN_PLATEAU.has(`${i},${j}`);
 
 /* ------------------------------------------------------------ geometry -- */
 
-const CELL = 16;
-const RISE = 88; // screen px between the lowest reading and the highest
+const CELL = 18;
+const RISE = 112; // screen px between the lowest reading and the highest
 
 /*  The surface spins about its own centre, so the drawing never needs more
     room than its half-diagonal however far it is turned. A constant width
@@ -65,7 +65,7 @@ const PAD = { l: 44, r: 12, t: 18, b: 24 };
 
 const DEFAULT_VIEW = { yaw: -0.62, pitch: 0.48 };
 const MIN_PITCH = 0.1;
-const MAX_PITCH = 0.58;
+const MAX_PITCH = 0.68;
 
 /*  EACH WINDOW GETS ITS OWN VERTICAL SCALE.
  *
@@ -277,7 +277,7 @@ export function SweepSurface() {
             //  Height-capped as well as width-capped: the section has a
             //  heading, a toggle, a hint line and three notes around it, and
             //  all of that has to sit on one screen.
-            "max-h-[42vh] w-full max-w-[470px] touch-none select-none",
+            "max-h-[58vh] w-full max-w-[600px] touch-none select-none",
             dragging ? "cursor-grabbing" : "cursor-grab",
           ].join(" ")}
           onPointerDown={onDown}
