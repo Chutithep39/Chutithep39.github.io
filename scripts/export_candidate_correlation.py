@@ -65,7 +65,10 @@ def book_daily() -> tuple[pd.DataFrame, list[dict]]:
            from portfolio_members m join ea_profiles p on p.id = m.profile_id
            where m.portfolio_id = ? order by m.sort_order""", (pid,))]
     ids = sorted(m["profile_id"] for m in members)
-    scales = {m["profile_id"]: float(m["scale"] or 0.0) for m in members}
+    #  Matches the site export's half-size book. Correlation is scale-
+    #  invariant so this changes nothing here, but keeping the two scripts on
+    #  one basis stops a future reader having to check whether it mattered.
+    scales = {m["profile_id"]: float(m["scale"] or 0.0) * 0.5 for m in members}
 
     idx, t, ret, _ = PS._merged(ids)
     pnl = np.maximum(np.array([scales[ids[i]] for i in idx]) * ret, -0.99) * START

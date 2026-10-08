@@ -322,6 +322,13 @@ def main() -> None:
     #  do not pass it with --compounding and expect the same numbers.
     ap.add_argument("--start", type=float, default=10000.0,
                     help="capital the curve is drawn on (default 10000)")
+    #  SITE-ONLY RISK SCALE. Every member's size is multiplied by this before
+    #  anything is computed. Under static sizing it is a clean dial: dollars,
+    #  return % and drawdown % all move together, so Calmar and Sharpe come out
+    #  identical and only the magnitude of the claim changes. The lab's own
+    #  scales are untouched — this is a presentation choice, not a re-fit.
+    ap.add_argument("--scale", type=float, default=0.5,
+                    help="multiplier on every member's size (default 0.5)")
     ap.add_argument("--mode", choices=["engine", "report"], default="engine",
                     help="engine: re-run each member over the data lake, so a "
                          "daily sync actually moves. report: the uploaded "
@@ -345,7 +352,8 @@ def main() -> None:
         raise SystemExit(f"{port['name']!r} has no members")
 
     ids = sorted(m["profile_id"] for m in members)
-    scales = {m["profile_id"]: float(m["scale"] or 0.0) for m in members}
+    scales = {m["profile_id"]: float(m["scale"] or 0.0) * args.scale
+              for m in members}
     start = float(args.start if args.start else port["start_balance"])
 
     #  The lab's own merged trade stream, replayed on ONE shared balance. The
@@ -473,12 +481,12 @@ def main() -> None:
         legs.append({
             "symbol": m["symbol"],
             "family": m["family"],
-            "scale": round(float(m["scale"] or 0.0), 3),
+            "scale": round(scales[pid], 3),
             "n_trades": int(mask.sum()),
             "stats": st,
             "by": by,
             "health": health(pnls[mask], t[mask], start),
-            "cost": cost_breakdown(pid, float(m["scale"] or 0.0), start,
+            "cost": cost_breakdown(pid, scales[pid], start,
                                    args.through, (t[0], t[-1])),
             #  Dollars, rounded — aligned index-for-index with `curve`, so the
             #  file does not repeat the date axis eight more times.
@@ -542,6 +550,7 @@ def main() -> None:
         "stream": args.mode,
         "through": args.through if args.mode == "engine" else None,
         "sizing": "compounding" if compounding else "static",
+        "risk_scale": args.scale,
         "start_balance": start,
         "dd_cap_pct": port["max_dd_pct"],
         "members": len(ids),
