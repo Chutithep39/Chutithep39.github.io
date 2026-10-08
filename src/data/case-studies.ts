@@ -38,6 +38,7 @@ export type Block =
         | "significance-table"
         | "backtest-curve"
         | "backtest-table"
+        | "dip-surface"
         | "candidate-correlation";
     }
   /** Every word in the claim that could mean two things, pinned to one. */
@@ -205,6 +206,17 @@ export const CASE_STUDIES: CaseStudy[] = [
             kind: "p",
             text:
               "The strategy has a Calmar ratio of 0.79, which beats buy and hold on the NASDAQ at 0.52.",
+          },
+          {
+            kind: "p",
+            text:
+              "But that backtest trades one threshold at one exit time, and both were chosen. So both were swept.",
+          },
+          { kind: "figure", id: "dip-surface" },
+          {
+            kind: "p",
+            text:
+              "The chosen pair scores 0.90 on the fitted years and its four neighbours average 0.85. It is a shoulder, not a needle — being half a percent out on the trigger, or an hour early on the exit, changes very little. That is the result holding up, rather than one coordinate getting lucky.",
           },
         ],
       },

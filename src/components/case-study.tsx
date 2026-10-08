@@ -7,6 +7,7 @@ import {
   SignificanceTable,
 } from "@/components/baseline-histogram";
 import { CandidateCorrelation } from "@/components/candidate-correlation";
+import { DipSurface } from "@/components/dip-surface";
 import { Reveal } from "@/components/reveal";
 import type { Block, CaseStudy, Table } from "@/data/case-studies";
 
@@ -16,6 +17,7 @@ const FIGURES = {
   "backtest-curve": BacktestCurve,
   "backtest-table": BacktestTable,
   "candidate-correlation": CandidateCorrelation,
+  "dip-surface": DipSurface,
 } as const;
 
 /*  One write-up, in the order a reader interrogates it: what was claimed, what
