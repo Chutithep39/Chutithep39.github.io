@@ -54,18 +54,18 @@ const onPlateau = (i: number, j: number) => IN_PLATEAU.has(`${i},${j}`);
 
 /* ------------------------------------------------------------ geometry -- */
 
-const CELL = 17;
-const RISE = 165; // screen px between the lowest reading and the highest
+const CELL = 16;
+const RISE = 88; // screen px between the lowest reading and the highest
 
 /*  The surface spins about its own centre, so the drawing never needs more
     room than its half-diagonal however far it is turned. A constant width
     means the chart does not breathe while it is being dragged.             */
 const R = Math.hypot((NX - 1) / 2, (NY - 1) / 2) * CELL;
-const PAD = { l: 46, r: 14, t: 26, b: 30 };
+const PAD = { l: 44, r: 12, t: 18, b: 24 };
 
 const DEFAULT_VIEW = { yaw: -0.62, pitch: 0.48 };
 const MIN_PITCH = 0.1;
-const MAX_PITCH = 1.25;
+const MAX_PITCH = 0.58;
 
 /*  EACH WINDOW GETS ITS OWN VERTICAL SCALE.
  *
@@ -221,7 +221,7 @@ export function SweepSurface() {
   }).filter((p): p is NonNullable<typeof p> => p != null);
 
   return (
-    <div className="rounded-xl border border-border bg-card p-5 sm:p-6">
+    <div className="rounded-xl border border-border bg-card p-5">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="text-[13px] font-medium">
@@ -260,7 +260,7 @@ export function SweepSurface() {
         </div>
       </div>
 
-      <p className="mt-4 flex items-center justify-center gap-2 text-[12px] text-muted-foreground">
+      <p className="mt-2 flex items-center justify-center gap-2 text-[11.5px] text-muted-foreground">
         <span
           aria-hidden
           className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-border text-[11px]"
@@ -270,11 +270,14 @@ export function SweepSurface() {
         Drag the chart to rotate it &middot; double-click to reset
       </p>
 
-      <div className="mt-3 flex items-center justify-center gap-5">
+      <div className="mt-1 flex items-center justify-center gap-5">
         <svg
           viewBox={`0 0 ${r1(BOX_W)} ${r1(BOX_H)}`}
           className={[
-            "w-full max-w-[760px] touch-none select-none",
+            //  Height-capped as well as width-capped: the section has a
+            //  heading, a toggle, a hint line and three notes around it, and
+            //  all of that has to sit on one screen.
+            "max-h-[42vh] w-full max-w-[470px] touch-none select-none",
             dragging ? "cursor-grabbing" : "cursor-grab",
           ].join(" ")}
           onPointerDown={onDown}
