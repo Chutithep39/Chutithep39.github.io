@@ -33,7 +33,7 @@ const STEPS: Step[] = [
     target: "intro",
     title: "What this page is",
     body:
-      "A portfolio of eight automated strategies, backtested on eight years of one-minute data and scored after real trading costs. The chart below is the account they would have produced. Everything on this page is interactive — this walkthrough shows you what.",
+      "A portfolio of eight automated strategies, backtested on in-sample data and accounted for real trading costs. The chart below shows in-sample, out-of-sample, and live. Everything on this page is interactive — this walkthrough shows you how to navigate.",
     mode: "combined",
   },
   {
