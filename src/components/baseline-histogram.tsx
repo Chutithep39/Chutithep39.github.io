@@ -74,17 +74,17 @@ export function BaselineHistogram() {
 
   return (
     <figure className="mt-6">
-      <div className="flex items-baseline justify-between gap-3">
-        <span className="text-[14px] font-medium">
-          {LABEL} — Put today&rsquo;s return on the X-axis, against
-          tomorrow&rsquo;s return on the Y-axis
-        </span>
-        <span className="shrink-0 font-mono text-[12px] text-muted-foreground">
+      {/*  No chart title. It restated the section's opening line word for
+          word, and two headings saying the same thing read as a mistake.
+          The sample size stays — it is the one fact the lede does not
+          carry.                                                           */}
+      <div className="flex justify-end">
+        <span className="font-mono text-[12px] text-muted-foreground">
           {C.n_pairs.toLocaleString("en-US")} day pairs
         </span>
       </div>
 
-      <div className="mt-3 overflow-hidden rounded-xl border border-border bg-card">
+      <div className="mt-2 overflow-hidden rounded-xl border border-border bg-card">
         <svg
           viewBox={`0 0 ${W} ${H}`}
           className="block h-auto w-full"

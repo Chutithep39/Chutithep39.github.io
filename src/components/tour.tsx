@@ -112,8 +112,11 @@ export function Tour() {
     return () => cancelAnimationFrame(id);
   }, []);
 
-  const close = useCallback(() => {
+  const close = useCallback((toTop = false) => {
     setOpen(false);
+    //  The last step sits at the foot of a very long page. Finishing there
+    //  leaves the reader at the bottom of something they have not read.
+    if (toTop) window.scrollTo({ top: 0, behavior: "smooth" });
     try {
       localStorage.setItem(KEY, "1");
     } catch {
@@ -253,7 +256,7 @@ export function Tour() {
       <button
         type="button"
         aria-label="Close walkthrough"
-        onClick={close}
+        onClick={() => close()}
         className="absolute inset-0 h-full w-full cursor-default"
       />
 
@@ -274,7 +277,7 @@ export function Tour() {
         <div className="mt-4 flex items-center gap-2">
           <button
             type="button"
-            onClick={close}
+            onClick={() => close()}
             className="text-[12px] text-muted-foreground transition-colors hover:text-foreground"
           >
             Skip
@@ -291,7 +294,9 @@ export function Tour() {
             )}
             <button
               type="button"
-              onClick={() => (i === STEPS.length - 1 ? close() : setI(i + 1))}
+              onClick={() =>
+                i === STEPS.length - 1 ? close(true) : setI(i + 1)
+              }
               className="grad-primary rounded-md px-3 py-1.5 text-[12px] font-medium text-white"
             >
               {i === STEPS.length - 1 ? "Done" : "Next"}

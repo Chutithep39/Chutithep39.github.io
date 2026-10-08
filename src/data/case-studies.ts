@@ -149,7 +149,7 @@ export const CASE_STUDIES: CaseStudy[] = [
           {
             kind: "lede",
             text:
-              "Put today's move on one axis and the next day's average return on the other — on the fitted years only, 2018 to 2023. Everything after that is held back for the backtest.",
+              "NASDAQ, fitted years only. Today's open-to-close return on the X-axis, the next day's average return on the Y-axis. Everything after 2023 is held back for the backtest.",
           },
           { kind: "figure", id: "baseline-histogram" },
           {
