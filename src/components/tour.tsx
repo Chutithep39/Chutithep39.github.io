@@ -40,14 +40,14 @@ const STEPS: Step[] = [
     target: "periods",
     title: "Three windows, each one optional",
     body:
-      "In-sample was fitted. Out-of-sample was scored once and never tuned. Click any of them to drop it from the chart — what is left rebases to the same $10k, so the numbers stay comparable.",
+      "In-sample was fitted. Out-of-sample was scored once and never tuned, live is traded with $10k base. Click any of them to drop it from the chart — what is left rebases to the same $10k, so the numbers stay comparable.",
     mode: "combined",
   },
   {
     target: "mode",
     title: "Two readings of the same book",
     body:
-      "Combined is the account as it would have been traded. By strategy splits it into the eight positions that produced it — same balance, same money, broken out.",
+      "Combined is the equity curve of all 8 strategies combined to one. By strategy splits it into the eight equity curves and splitted performance cards.",
     mode: "combined",
   },
   {
