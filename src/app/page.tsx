@@ -378,9 +378,9 @@ function Lab() {
           eyebrow="Research infrastructure"
           title={
             <>
-              Not guesswork —
+              I built the tool
               <br />
-              a tool I built for it.
+              I research with.
             </>
           }
           intro="Strategy Lab is my own backtest engine, data lake and dashboard. It searches a whole parameter space at once, scores every candidate on identical metric definitions, and keeps the fitted window and the held-out window apart from the first run."

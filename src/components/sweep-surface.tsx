@@ -97,7 +97,10 @@ function projector(mode: Mode, view: View) {
   const sy = Math.sin(view.yaw);
   const sp = Math.sin(view.pitch);
   const ox = PAD.l + R;
-  const oy = PAD.t + RISE + R * sp;
+  //  Centred for the TALLEST box the chart can ever need, not for the current
+  //  tilt. Using `sp` here made the drawing area shrink as the surface was
+  //  tilted flatter, so the card resized under the cursor mid-drag.
+  const oy = PAD.t + RISE + R * Math.sin(MAX_PITCH);
 
   return (i: number, j: number, z: number): Pt => {
     const u = (i - (NX - 1) / 2) * CELL;
@@ -110,7 +113,9 @@ function projector(mode: Mode, view: View) {
 }
 
 const BOX_W = PAD.l + 2 * R + PAD.r;
-const boxH = (pitch: number) => PAD.t + RISE + 2 * R * Math.sin(pitch) + PAD.b;
+//  Cut once, for the worst case: the grid turned to its diagonal and tilted as
+//  far as the clamp allows. Constant, so dragging never reflows the page.
+const BOX_H = PAD.t + RISE + 2 * R * Math.sin(MAX_PITCH) + PAD.b;
 
 /* --------------------------------------------------------------- hues -- */
 
@@ -267,7 +272,7 @@ export function SweepSurface() {
 
       <div className="mt-3 flex items-center justify-center gap-5">
         <svg
-          viewBox={`0 0 ${r1(BOX_W)} ${r1(boxH(view.pitch))}`}
+          viewBox={`0 0 ${r1(BOX_W)} ${r1(BOX_H)}`}
           className={[
             "w-full max-w-[760px] touch-none select-none",
             dragging ? "cursor-grabbing" : "cursor-grab",
