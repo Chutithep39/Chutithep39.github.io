@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 
+import { MEMBERS, START, money, word } from "@/lib/facts";
+
 /*  A first-run walkthrough for the page's controls.
  *
  *  Almost everything here is clickable or hoverable and none of it looks it:
@@ -36,21 +38,21 @@ export const RESULTS_STEPS: Step[] = [
     target: "intro",
     title: "What this page is",
     body:
-      "A portfolio of eight automated strategies, backtested on in-sample data and accounted for real trading costs. The chart below shows in-sample, out-of-sample, and live. Everything on this page is interactive — this walkthrough shows you how to navigate.",
+      `A portfolio of ${word(MEMBERS)} automated strategies, backtested on in-sample data and accounted for real trading costs. The chart below shows in-sample, out-of-sample, and live. Everything on this page is interactive — this walkthrough shows you how to navigate.`,
     mode: "combined",
   },
   {
     target: "periods",
     title: "Three windows, each one optional",
     body:
-      "In-sample was fitted. Out-of-sample was scored once and never tuned, live is traded with $10k base. Click any of them to drop it from the chart — what is left rebases to the same $10k, so the numbers stay comparable.",
+      `In-sample was fitted. Out-of-sample was scored once and never tuned, live is traded with ${money(START)} base. Click any of them to drop it from the chart — what is left rebases to the same ${money(START)}, so the numbers stay comparable.`,
     mode: "combined",
   },
   {
     target: "mode",
     title: "Two readings of the same book",
     body:
-      "Combined is the equity curve of all 8 strategies combined to one. By strategy splits it into the eight equity curves and splitted performance cards.",
+      `Combined is the equity curve of all ${MEMBERS} strategies combined to one. By strategy splits it into the ${word(MEMBERS)} equity curves and splitted performance cards.`,
     mode: "combined",
   },
   {

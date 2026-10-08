@@ -1,4 +1,7 @@
+import { START, money as roundMoney } from "@/lib/facts";
 import { LEGS, hueOf, letterOf, marketOf } from "@/lib/legs";
+
+const basisLabel = roundMoney(START);
 
 /*  What the curve paid to exist.
  *
@@ -31,7 +34,7 @@ export function CostTable() {
       </h2>
       <p className="mt-1 text-[12px] text-muted-foreground">
         Every figure on this page is the net column. Dollars are on the same
-        fixed-size $10k basis as the chart.
+        fixed-size {basisLabel} basis as the chart.
       </p>
 
       <div className="mt-3 overflow-x-auto rounded-xl border border-border bg-card p-4">

@@ -83,6 +83,11 @@ try {
   Run "scripts\export_baseline.py"
   Run "scripts\export_backtest.py"
   Run "scripts\export_candidate_correlation.py"
+  # The two surfaces. Neither depends on a live feed, but both read the data
+  # lake and both carry figures the write-up quotes, so they refresh with
+  # everything else rather than being whatever was last run by hand.
+  Run "scripts\export_dip_sweep.py"
+  Run "scripts\export_sweep_surface.py"
 
   # PUBLISH. Re-exporting the JSON only moves the numbers on this machine;
   # the public site rebuilds from a push. ONLY src/data is committed - a data

@@ -33,8 +33,13 @@ OUT = HERE / "src" / "data" / "backtest.json"
 SYMBOL = "USTEC"
 POINT = 0.01            # USTEC point size, from the broker's symbol spec
 THRESHOLD = -2.0        # chosen off the significance table, before this ran
-FROM, TO = "2018-01-01", "2026-10-07"
+#  TO follows the clock, not a literal. Pinned to a date, this page froze
+#  on the day it was written while the nightly refresh ran happily beside
+#  it re-exporting the same numbers.
+FROM, TO = "2018-01-01", date.today().isoformat()
 SPLIT = "2024-01-01"    # fitted / held out
+ENTRY_HOUR = 1          # session open, broker time
+EXIT_HOUR = 22          # flat at this hour; 23:00 is measurably negative here
 TRADING_DAYS = 252
 
 
@@ -47,7 +52,7 @@ def sessions() -> pd.DataFrame:
     #  01:00-22:00 broker. The exit is 22:00 and NOT 23:00 — that last hour is
     #  measurably negative on this instrument, and letting it in would flatter
     #  every number below.
-    px = px[(px.index.hour >= 1) & (px.index.hour < 22)]
+    px = px[(px.index.hour >= ENTRY_HOUR) & (px.index.hour < EXIT_HOUR)]
     g = px.groupby(px.index.normalize())
     df = pd.DataFrame({
         "open": g["open"].first(),
@@ -123,13 +128,41 @@ def main() -> None:
         for d, v in zip(t.index, eq)
     ]
 
+    #  BUY AND HOLD, over exactly the span the strategy traded. The write-up
+    #  compares the two and the comparison was being typed in by hand, so it
+    #  could not follow the data the page beside it was following.
+    #
+    #  Compounding here, unlike the portfolio page's baseline: this is a
+    #  per-trade strategy measured in percent, not a $-sized book, and the
+    #  honest alternative use of the money is owning the index.
+    hold = None
+    if len(t):
+        s_px = s.loc[t.index[0]:t.index[-1], "close"]
+        eq = s_px / s_px.iloc[0]
+        yrs = (s_px.index[-1] - s_px.index[0]).days / 365.25
+        dd = float((1 - eq / eq.cummax()).max() * 100)
+        cagr = float((eq.iloc[-1] ** (1 / yrs) - 1) * 100) if yrs > 0 else 0.0
+        hold = {
+            "label": f"{SYMBOL} buy & hold",
+            "from": s_px.index[0].strftime("%Y-%m-%d"),
+            "to": s_px.index[-1].strftime("%Y-%m-%d"),
+            "years": round(yrs, 2),
+            "total_pct": round(float((eq.iloc[-1] - 1) * 100), 1),
+            "per_year_pct": round(cagr, 1),
+            "max_dd_pct": round(dd, 2),
+            "calmar": round(cagr / dd, 2) if dd > 0 else None,
+        }
+
     payload = {
         "generated": date.today().isoformat(),
         "symbol": SYMBOL,
         "threshold_pct": THRESHOLD,
+        "entry_hour": ENTRY_HOUR,
+        "exit_hour": EXIT_HOUR,
         "split": SPLIT,
         "basis": "fixed size, one unit per trade, net of one full spread",
         "windows": [w for w in windows if w],
+        "buy_and_hold": hold,
         "curve": curve,
     }
     pathlib.Path(args.out).write_text(json.dumps(payload, separators=(",", ":")),

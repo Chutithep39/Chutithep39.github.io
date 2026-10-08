@@ -10,6 +10,94 @@
  *  the idea simply did not work shows nothing about judgement.
  */
 
+/*  EVERY QUOTED FIGURE IS READ OUT OF THE EXPORTS, NOT TYPED HERE.
+ *
+ *  This file used to carry the numbers as literals — "p = 0.020 on 121
+ *  events", "+61.8% over eight and a half years", "Calmar 0.79 against 0.52".
+ *  All of those are outputs of the nightly refresh. Left as prose they would
+ *  go on asserting last month's result next to a chart drawn from today's,
+ *  which is the one failure a page about checkable work cannot afford.
+ *
+ *  The sentences are still written by hand. Only the numbers inside them come
+ *  from the data, so the prose can stay prose and still never drift.
+ */
+import backtest from "@/data/backtest.json";
+import baseline from "@/data/baseline.json";
+import candidate from "@/data/candidate-correlation.json";
+import dipSweep from "@/data/dip-sweep.json";
+import { LEGS, letterOf, marketOf } from "@/lib/legs";
+import { spokenDuration } from "@/lib/facts";
+
+const SYM = backtest.symbol as string;
+const THR = backtest.threshold_pct as number;          // e.g. -2
+const THR_PCT = `${Math.abs(THR)}%`;
+const EXIT = `${String(backtest.exit_hour).padStart(2, "0")}:00`;
+const ENTRY = `${String(backtest.entry_hour).padStart(2, "0")}:00`;
+
+type Win = {
+  label: string; from: string; to: string; years: number; n_trades: number;
+  net_mean_pct: number; total_pct: number; per_year_pct: number;
+  max_dd_pct: number; win_rate_pct: number;
+};
+const WINS = backtest.windows as Win[];
+const pick = (label: string) => WINS.find((w) => w.label === label)!;
+const FIT = pick("Fitted");
+const OOS = pick("Held out");
+const ALL = pick("Full period");
+const CALMAR = ALL.per_year_pct / ALL.max_dd_pct;
+const HOLD = backtest.buy_and_hold as { label: string; calmar: number | null };
+
+/*  The analysis section reads the symbol the hypothesis was framed on. */
+const B = (baseline.symbols as Record<string, {
+  conditional: {
+    unconditional_mean_pct: number;
+    n_pairs: number;
+    bins: { lo: number | null; hi: number | null; n: number; mean_pct: number }[];
+  };
+  significance: {
+    threshold: number; n_after: number; p_mean: number;
+    mean_after_pct: number; mean_other_pct: number;
+    up_after_pct: number; up_other_pct: number;
+  }[];
+}>)[SYM];
+
+const BINS = B.conditional.bins;
+const DOWN_TAIL = BINS[0];                      // everything below the lowest edge
+const UP_TAIL = BINS[BINS.length - 1];
+const TAIL_EDGE = `${Math.abs(DOWN_TAIL.hi ?? 4)}%`;
+const TAIL_N = DOWN_TAIL.n + UP_TAIL.n;
+//  The quiet middle: every bucket inside the two tails.
+const MIDDLE_N = BINS.length - 2;
+const MIDDLE_LO = `${Math.abs(BINS[1].hi ?? 3)}%`;
+const MIDDLE_HI = `+${UP_TAIL.lo ?? 4}%`;
+
+const sig = (t: number) => B.significance.find((r) => r.threshold === t)!;
+const SIG = sig(THR);
+const SIG_NEXT = B.significance.find((r) => r.threshold < THR);
+const CONF = `${Math.round((1 - SIG.p_mean) * 100)}%`;
+
+const DIP = dipSweep.chosen as { is: number; around: number };
+
+/*  Which deployed strategy the candidate collides with, found in the matrix
+    rather than named here — if the book changes, so does the sentence.    */
+const CAND_I = candidate.candidate_index as number;
+const C_ALL = (candidate.matrix as number[][])[CAND_I];
+const C_DD = (candidate.matrix_dd as number[][])[CAND_I];
+const RIVAL = C_ALL
+  .map((v, i) => ({ i, v }))
+  .filter((x) => x.i !== CAND_I)
+  .sort((a, b) => b.v - a.v)[0];
+const RIVAL_NAME = `Strategy ${letterOf(RIVAL.i)}`;
+const RIVAL_CALMAR = LEGS[RIVAL.i]?.stats?.calmar ?? null;
+const SECOND = C_ALL
+  .map((v, i) => ({ i, v }))
+  .filter((x) => x.i !== CAND_I && x.i !== RIVAL.i)
+  .sort((a, b) => b.v - a.v)[0];
+
+const n1 = (v: number) => v.toFixed(1);
+const n2 = (v: number) => v.toFixed(2);
+const sgn = (v: number) => (v >= 0 ? `+${v.toFixed(2)}` : v.toFixed(2));
+
 export type Table = {
   caption?: string;
   head: string[];
@@ -70,8 +158,11 @@ export const CASE_STUDIES: CaseStudy[] = [
       "Real and significant, but it fails correlation analysis by doubling the risk already in the portfolio",
     cause: "additivity",
     meta: [
-      { label: "Instrument", value: "USTEC — NASDAQ 100" },
-      { label: "Window", value: "2018 → 2026, one-minute data" },
+      { label: "Instrument", value: `${SYM} — ${marketOf({ symbol: SYM } as never)}` },
+      {
+        label: "Window",
+        value: `${ALL.from.slice(0, 4)} → ${ALL.to.slice(0, 4)}, one-minute data`,
+      },
       { label: "Hold", value: "Next day open → close, no overnight" },
       { label: "Killed on", value: "Side-prediction 3 — the correlation gate" },
     ],
@@ -150,18 +241,18 @@ export const CASE_STUDIES: CaseStudy[] = [
           {
             kind: "lede",
             text:
-              "NASDAQ, fitted years only. Today's open-to-close return on the X-axis, the next day's average return on the Y-axis. Everything after 2023 is held back for the backtest.",
+              `${marketOf({ symbol: SYM } as never)}, fitted years only. Today's open-to-close return on the X-axis, the next day's average return on the Y-axis. Everything after ${Number(backtest.split.slice(0, 4)) - 1} is held back for the backtest.`,
           },
           { kind: "figure", id: "baseline-histogram" },
           {
             kind: "p",
             text:
-              "Days that move more than 4% in either direction tend to revert: a fall of 4% or more is followed by +1.73%, a rise of 4% or more by −0.99%. That is the overshoot the hypothesis claims, and it shows up on both sides rather than only the one the claim needed — which is the stronger result, because a mechanism about forced flow should not care which way the flow runs.",
+              `Days that move more than ${TAIL_EDGE} in either direction tend to revert: a fall of ${TAIL_EDGE} or more is followed by ${sgn(DOWN_TAIL.mean_pct)}%, a rise of ${TAIL_EDGE} or more by ${sgn(UP_TAIL.mean_pct)}%. That is the overshoot the hypothesis claims, and it shows up on both sides rather than only the one the claim needed — which is the stronger result, because a mechanism about forced flow should not care which way the flow runs.`,
           },
           {
             kind: "p",
             text:
-              "Two cautions sit against it. The middle of the chart barely moves — the seven buckets between −3% and +4% sit close to an ordinary day — so most of the shape rests on 33 of 1,548 days. And a reversal measured on 33 days could as easily be a few crash weeks as an effect.",
+              `Two cautions sit against it. The middle of the chart barely moves — the ${MIDDLE_N} buckets between −${MIDDLE_LO} and ${MIDDLE_HI} sit close to an ordinary day — so most of the shape rests on ${TAIL_N} of ${B.conditional.n_pairs.toLocaleString("en-US")} days. And a reversal measured on ${TAIL_N} days could as easily be a few crash weeks as an effect.`,
           },
           {
             kind: "lede",
@@ -176,8 +267,8 @@ export const CASE_STUDIES: CaseStudy[] = [
           {
             kind: "list",
             items: [
-              "Only the deep falls do anything. After a fall of 2% or more the next day averages +0.44% against +0.05%, at 98% confidence; 2.5% is similar. At 1.0% and 1.5% the difference does not reach significance at all.",
-              "The direction shows nothing. After a 2% fall the next day closes green 55.4% of the time against 55.6% otherwise — no difference at all. So the strategy does not win more often than any other day, but when it wins, it wins bigger.",
+              `Only the deep falls do anything. After a fall of ${THR_PCT} or more the next day averages ${sgn(SIG.mean_after_pct)}% against ${sgn(SIG.mean_other_pct)}%, at ${CONF} confidence; ${Math.abs(SIG_NEXT!.threshold)}% is similar. At the shallower thresholds the difference does not reach significance at all.`,
+              `The direction shows nothing. After a ${THR_PCT} fall the next day closes green ${n1(SIG.up_after_pct)}% of the time against ${n1(SIG.up_other_pct)}% otherwise — no difference at all. So the strategy does not win more often than any other day, but when it wins, it wins bigger.`,
             ],
           },
         ],
@@ -188,24 +279,24 @@ export const CASE_STUDIES: CaseStudy[] = [
           {
             kind: "lede",
             text:
-              "If yesterday fell more than 2%, buy today's open at 01:00 and sell at 22:00.",
+              `If yesterday fell more than ${THR_PCT}, buy today's open at ${ENTRY} and sell at ${EXIT}.`,
           },
           {
             kind: "p",
             text:
-              "2% is the strongest threshold that still has a usable sample — p = 0.020 on 121 events, against 74 at 2.5%. It was picked off the table above, which sees only the fitted years, so the held-out half below really is held out.",
+              `${THR_PCT} is the strongest threshold that still has a usable sample — p = ${SIG.p_mean.toFixed(3)} on ${SIG.n_after} events, against ${SIG_NEXT!.n_after} at ${Math.abs(SIG_NEXT!.threshold)}%. It was picked off the table above, which sees only the fitted years, so the held-out half below really is held out.`,
           },
           { kind: "figure", id: "backtest-curve" },
           { kind: "figure", id: "backtest-table" },
           {
             kind: "p",
             text:
-              "It works in sample and out: +0.48% a trade fitted, +0.43% held out. In total, +61.8% over eight and a half years against a 9.3% maximum drawdown, on 132 trades.",
+              `It works in sample and out: ${sgn(FIT.net_mean_pct)}% a trade fitted, ${sgn(OOS.net_mean_pct)}% held out. In total, +${n1(ALL.total_pct)}% over ${spokenDuration(ALL.years)} against a ${n1(ALL.max_dd_pct)}% maximum drawdown, on ${ALL.n_trades} trades.`,
           },
           {
             kind: "p",
             text:
-              "The strategy has a Calmar ratio of 0.79, which beats buy and hold on the NASDAQ at 0.52.",
+              `The strategy has a Calmar ratio of ${n2(CALMAR)}, which beats buy and hold on the ${marketOf({ symbol: SYM } as never)} at ${n2(HOLD.calmar ?? 0)}.`,
           },
           {
             kind: "p",
@@ -216,7 +307,7 @@ export const CASE_STUDIES: CaseStudy[] = [
           {
             kind: "p",
             text:
-              "The chosen pair scores 0.90 on the fitted years and its four neighbours average 0.85. It is a shoulder, not a needle — being half a percent out on the trigger, or an hour early on the exit, changes very little. That is the result holding up, rather than one coordinate getting lucky.",
+              `The chosen pair scores ${n2(DIP.is)} on the fitted years and its four neighbours average ${n2(DIP.around)}. It is a shoulder, not a needle — being a quarter of a percent out on the trigger, or an hour early on the exit, changes very little. That is the result holding up, rather than one coordinate getting lucky.`,
           },
         ],
       },
@@ -232,12 +323,12 @@ export const CASE_STUDIES: CaseStudy[] = [
           {
             kind: "p",
             text:
-              "The dip buy correlates with Strategy A and Strategy H, both of which trade the NASDAQ. Against H it runs at +0.42 on all days and +0.34 on the book's worst ones.",
+              `The dip buy correlates with ${RIVAL_NAME} and Strategy ${letterOf(SECOND.i)}, both of which trade the ${marketOf({ symbol: SYM } as never)}. Against ${letterOf(RIVAL.i)} it runs at ${sgn(RIVAL.v)} on all days and ${sgn(C_DD[RIVAL.i])} on the book's worst ones.`,
           },
           {
             kind: "p",
             text:
-              "That is where it dies. H covers the same ground at a Calmar of 1.75 against 0.79 here, so the slot is already filled by the better of the two.",
+              `That is where it dies. ${letterOf(RIVAL.i)} covers the same ground at a Calmar of ${n2(RIVAL_CALMAR ?? 0)} against ${n2(CALMAR)} here, so the slot is already filled by the better of the two.`,
           },
         ],
       },

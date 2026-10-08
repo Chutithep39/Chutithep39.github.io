@@ -12,6 +12,8 @@
  *  found empty, which costs more credibility than their titles were buying.
  *  What is left is the evidence and the write-up behind it.
  */
+import { MEMBERS, INSTRUMENTS, START, money, word } from "@/lib/facts";
+
 export type Section = {
   slug: string;
   /** Where the section actually lives. Only set when it is not `/<slug>`. */
@@ -39,7 +41,7 @@ export const SECTIONS: Section[] = [
     label: "Portfolio Performance",
     eyebrow: "Quantitative trading, 2018-2026",
     blurb:
-      "Performance of a portfolio of eight uncorrelated strategies across five instruments, sized at fixed risk based on $10k initial capital, split into fitted in-sample, out-of-sample, and live.",
+      `Performance of a portfolio of ${word(MEMBERS)} uncorrelated strategies across ${word(INSTRUMENTS)} instruments, sized at fixed risk based on ${money(START)} initial capital, split into fitted in-sample, out-of-sample, and live.`,
     ready: true,
   },
   {

@@ -44,9 +44,13 @@ const PLATEAU = sweep.plateau as {
 const IN_PLATEAU = new Set(PLATEAU.cells.map(([i, j]) => `${i},${j}`));
 const onPlateau = (i: number, j: number) => IN_PLATEAU.has(`${i},${j}`);
 
+/*  "2018–2023" was typed in, and the held-out window grows every night.   */
+const yearSpan = (w: { from: string; to: string }) =>
+  `${w.from.slice(0, 4)}–${w.to.slice(0, 4)}`;
+
 const MODES: { key: Mode; label: string; sub: string }[] = [
-  { key: "is", label: "Fitted", sub: "2018–2023" },
-  { key: "oos", label: "Held out", sub: "2024–2026" },
+  { key: "is", label: "Fitted", sub: yearSpan(sweep.windows.is) },
+  { key: "oos", label: "Held out", sub: yearSpan(sweep.windows.oos) },
 ];
 
 /* ------------------------------------------------------------ geometry -- */

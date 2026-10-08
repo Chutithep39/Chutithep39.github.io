@@ -1,6 +1,9 @@
 "use client";
 
 import { Tour, type Step } from "@/components/tour";
+import { LIVE_SPOKEN, SPAN_SPOKEN } from "@/lib/facts";
+
+const cap = (s: string) => s[0].toUpperCase() + s.slice(1);
 
 /*  The landing page's walkthrough.
  *
@@ -32,7 +35,7 @@ const STEPS: Step[] = [
     target: "snapshot",
     title: "What the book is doing now",
     body:
-      "The live window only, against the S&P 500 over the same days. Ten weeks is a progress check and not a track record — the eight years behind it are on the performance page.",
+      `The live window only, against the S&P 500 over the same days. ${cap(LIVE_SPOKEN)} is a progress check and not a track record — the ${SPAN_SPOKEN} behind it are on the performance page.`,
   },
   {
     target: "outcome",

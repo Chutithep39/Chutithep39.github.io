@@ -7,6 +7,7 @@ import { SweepSurface } from "@/components/sweep-surface";
 import { Reveal } from "@/components/reveal";
 import data from "@/data/portfolio99.json";
 import SWEEP from "@/data/sweep-surface.json";
+import { LIVE_SPOKEN, SPAN_SPOKEN } from "@/lib/facts";
 
 /*  HOME.
  *
@@ -502,10 +503,9 @@ function Snapshot() {
       <Reveal>
         <p className="mt-4 max-w-[80ch] text-[12px] leading-relaxed text-muted-foreground">
           This is the window the book is trading now &mdash; {LIVE.n_trades}{" "}
-          trades over {Math.round(LIVE.years * 12)} months, which is a progress
-          check and not a track record. The eight years behind it, split into the
-          fitted window and the held-out one that was scored once, are on the
-          results page.{" "}
+          trades over {LIVE_SPOKEN}, which is a progress check and not a track
+          record. The {SPAN_SPOKEN} behind it, split into the fitted window and
+          the held-out one that was scored once, are on the results page.{" "}
           <Link
             href="/results"
             className="text-foreground underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground/40"

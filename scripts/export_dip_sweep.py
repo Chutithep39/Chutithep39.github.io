@@ -38,7 +38,8 @@ OUT = HERE / "src" / "data" / "dip-sweep.json"
 
 SYMBOL = "USTEC"
 POINT = 0.01
-FROM, TO = "2018-01-01", "2026-10-07"
+#  TO follows the clock, not a literal — see export_backtest.py.
+FROM, TO = "2018-01-01", date.today().isoformat()
 SPLIT = "2024-01-01"
 
 #  The two knobs the strategy actually has. Thresholds run past the chosen
