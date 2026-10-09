@@ -409,6 +409,15 @@ function Frame({
   //  The two floor edges meeting at the NEAREST corner are the ones a reader
   //  can actually see, so the axis names sit on those.
   const near = floor.reduce((best, p, k) => (p.d > floor[best].d ? k : best), 0);
+  /*  Same trap as the write-up's surface: `corners` runs (0,0) (nx-1,0)
+   *  (nx-1,ny-1) (0,ny-1), so WHICH of (near+1) and (near+3) moves i flips
+   *  with the parity of `near`. Hard-coding +1 as the x axis labels the two
+   *  edges the wrong way round at half the rotations.                      */
+  const nb1 = (near + 1) % 4;
+  const nb3 = (near + 3) % 4;
+  const iAxis = corners[nb1][0] !== corners[near][0] ? nb1 : nb3;
+  const jAxis = iAxis === nb1 ? nb3 : nb1;
+
   const nameAt = (k: number, text: string) => {
     const a = floor[near];
     const b = floor[k];
@@ -468,8 +477,8 @@ function Frame({
         Calmar
       </text>
 
-      {nameAt((near + 1) % 4, "X-axis")}
-      {nameAt((near + 3) % 4, "Y-axis")}
+      {nameAt(iAxis, "X-axis")}
+      {nameAt(jAxis, "Y-axis")}
     </g>
   );
 }

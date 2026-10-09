@@ -372,6 +372,19 @@ function Frame({
 
   //  Axis VALUES, not just names: the rule is public, so the reader should be
   //  able to find 2% and 22:00 on the picture for themselves.
+  /*  WHICH NEIGHBOUR IS WHICH AXIS.
+   *
+   *  `corners` runs (0,0) (nx-1,0) (nx-1,ny-1) (0,ny-1), so from any corner one
+   *  neighbour changes i and the other changes j — but WHICH of (near+1) and
+   *  (near+3) does that flips with the parity of `near`. Hard-coding +1 as the
+   *  x axis put the hour labels along the threshold edge and the threshold
+   *  labels along the hour edge; the surface and the pin were right the whole
+   *  time, the words under them were not.                                   */
+  const nb1 = (near + 1) % 4;
+  const nb3 = (near + 3) % 4;
+  const iAxis = corners[nb1][0] !== corners[near][0] ? nb1 : nb3;
+  const jAxis = iAxis === nb1 ? nb3 : nb1;
+
   const sideTicks = (k: number, fmt: (v: number) => string, vals: number[], along: "x" | "y") => {
     const a = floor[near];
     const b = floor[k];
@@ -425,10 +438,10 @@ function Frame({
         Calmar
       </text>
 
-      {sideTicks((near + 1) % 4, pctLabel, XV, "x")}
-      {sideTicks((near + 3) % 4, hourLabel, YV, "y")}
-      {name((near + 1) % 4, sweep.x.label)}
-      {name((near + 3) % 4, sweep.y.label)}
+      {sideTicks(iAxis, pctLabel, XV, "x")}
+      {sideTicks(jAxis, hourLabel, YV, "y")}
+      {name(iAxis, sweep.x.label)}
+      {name(jAxis, sweep.y.label)}
     </g>
   );
 }
