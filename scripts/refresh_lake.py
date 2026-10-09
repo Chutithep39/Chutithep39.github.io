@@ -23,6 +23,9 @@ sys.path.insert(0, str(LAB / "backend"))
 
 from app.services import data_download as DD  # noqa: E402
 
+#  Must match `export_portfolio.py`'s benchmark symbol.
+BENCHMARK = "US500"
+
 
 def symbols_of(portfolio: str) -> list[str]:
     conn = sqlite3.connect(LAB / "data" / "lab.sqlite")
@@ -34,10 +37,16 @@ def symbols_of(portfolio: str) -> list[str]:
         if len(hits) != 1:
             raise SystemExit(f"{portfolio!r} matched {len(hits)} portfolios")
         hit = hits[0]
-    return sorted({r[0] for r in conn.execute(
+    members = {r[0] for r in conn.execute(
         """select distinct p.symbol from portfolio_members m
            join ea_profiles p on p.id = m.profile_id
-           where m.portfolio_id = ?""", (hit["id"],))})
+           where m.portfolio_id = ?""", (hit["id"],))}
+    #  THE BENCHMARK IS PART OF THE PAGE. The buy-and-hold line the book is
+    #  measured against is drawn from US500, which no member trades — so it
+    #  was never pulled, and the comparison quietly aged while the book's own
+    #  curve moved. A stale baseline flatters or punishes the book by whatever
+    #  the index did in the days nobody fetched.
+    return sorted(members | {BENCHMARK})
 
 
 def main() -> None:

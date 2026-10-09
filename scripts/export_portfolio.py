@@ -64,6 +64,34 @@ def force_engine_mode(through: str) -> None:
 
     EAP.get = patched
 
+
+def closed_trades_only() -> None:
+    """Publish only positions that actually closed.
+
+    The engines book a position still open when the bars run out — MT5's
+    tester does the same, and parity depends on it, so the engine is right to.
+    But that last row is a FLOATING mark, priced at whatever minute the lake
+    happens to end on, and the site presents realised results beside a live
+    account. The 8 Oct USDJPY row carried `exit_reason="end_of_data"` at
+    14:26 and +$74.65 that nobody had been paid.
+
+    Filtered HERE and not in the engine: the lab still needs the open position
+    booked to match the tester. This is a publishing rule, not a model change.
+    """
+    from app.services import portfolio_simulator as PSIM
+
+    original = PSIM._run_strategy_trades
+
+    def patched(*a, **k):
+        tr = original(*a, **k)
+        if tr is not None and len(tr) and "exit_reason" in tr.columns:
+            open_rows = tr["exit_reason"].astype(str).eq("end_of_data")
+            if open_rows.any():
+                tr = tr[~open_rows]
+        return tr
+
+    PSIM._run_strategy_trades = patched
+
 #  The three windows. Only the first was ever fitted; the rest are scored.
 #  ⚠ The third is LABELLED "Live" at the owner's instruction, but its data is
 #  the same backtest as the other two — no member stream here is live-traded
@@ -339,6 +367,7 @@ def main() -> None:
     compounding = bool(args.compounding)
     if args.mode == "engine":
         force_engine_mode(args.through)
+    closed_trades_only()
 
     conn = sqlite3.connect(LAB / "data" / "lab.sqlite")
     conn.row_factory = sqlite3.Row
