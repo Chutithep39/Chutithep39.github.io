@@ -385,15 +385,30 @@ function Frame({
   const iAxis = corners[nb1][0] !== corners[near][0] ? nb1 : nb3;
   const jAxis = iAxis === nb1 ? nb3 : nb1;
 
-  const sideTicks = (k: number, fmt: (v: number) => string, vals: number[], along: "x" | "y") => {
+  /*  AND THE EDGE MAY RUN BACKWARDS.
+   *
+   *  Walking from the near corner outwards is not the same as walking from
+   *  index 0 to index n-1: the near corner holds whichever end of the axis
+   *  the current rotation put closest, and for `j` at the default view that
+   *  is the LAST index. Interpolating `s / (n-1)` from the near corner
+   *  therefore printed 15:00 where 23:00 stands. Read the start and end
+   *  indices off the two corners instead of assuming them.                 */
+  const sideTicks = (
+    k: number,
+    fmt: (v: number) => string,
+    vals: number[],
+    along: 0 | 1,
+  ) => {
     const a = floor[near];
     const b = floor[k];
+    const from = corners[near][along];
+    const to = corners[k][along];
     const out = [];
     for (let s = 1; s < vals.length; s += 2) {
-      const t = vals.length === 1 ? 0 : s / (vals.length - 1);
+      const t = to === from ? 0 : (s - from) / (to - from);
       const p = { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t };
       out.push(
-        <text key={`${along}${s}`} x={p.x} y={p.y + 12} fontSize="8.5"
+        <text key={`${along}-${s}`} x={p.x} y={p.y + 12} fontSize="8.5"
               textAnchor="middle" fill="var(--muted-foreground)">
           {fmt(vals[s])}
         </text>,
@@ -438,8 +453,8 @@ function Frame({
         Calmar
       </text>
 
-      {sideTicks(iAxis, pctLabel, XV, "x")}
-      {sideTicks(jAxis, hourLabel, YV, "y")}
+      {sideTicks(iAxis, pctLabel, XV, 0)}
+      {sideTicks(jAxis, hourLabel, YV, 1)}
       {name(iAxis, sweep.x.label)}
       {name(jAxis, sweep.y.label)}
     </g>
