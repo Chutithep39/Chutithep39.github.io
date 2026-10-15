@@ -97,8 +97,20 @@ try {
     Say "publishing to GitHub Pages"
     git add -- src/data
     $stamp = Get-Date -Format "yyyy-MM-dd"
-    git -c user.name="Chutithep Engmahussakul" -c user.email="chutithep.eng@gmail.com" commit -q -m "Data refresh $stamp"
+    # Identity comes from this repo's local git config (.git/config, never pushed) so no name sits in the source.
+    git commit -q -m "Data refresh $stamp"
     git push -q origin master
+    # Anonymous mirror (owner, 2026-10-15): if a remote named "anon" exists, publish the SAME tree as one fresh,
+    # parentless commit under a neutral identity, so the mirror's history carries no name or e-mail.
+    if (git remote | Select-String -Quiet "^anon$") {
+      $tree = git rev-parse "HEAD^{tree}"
+      $env:GIT_AUTHOR_NAME = "Quant Research Notes"; $env:GIT_AUTHOR_EMAIL = "noreply@users.noreply.github.com"
+      $env:GIT_COMMITTER_NAME = $env:GIT_AUTHOR_NAME; $env:GIT_COMMITTER_EMAIL = $env:GIT_AUTHOR_EMAIL
+      $c = git commit-tree $tree -m "Site update $stamp"
+      Remove-Item Env:GIT_AUTHOR_NAME, Env:GIT_AUTHOR_EMAIL, Env:GIT_COMMITTER_NAME, Env:GIT_COMMITTER_EMAIL
+      git push -q -f anon "${c}:refs/heads/master"
+      Say "pushed anonymous mirror"
+    }
     Say "pushed - Pages rebuilds in about a minute"
   } else {
     Say "data unchanged - nothing to publish"

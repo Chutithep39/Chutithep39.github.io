@@ -7,6 +7,7 @@ import { CostTable } from "@/components/cost-table";
 import { EquityCurve } from "@/components/equity-curve";
 import { Tour } from "@/components/tour";
 import { SECTIONS, bySlug, hrefOf } from "@/lib/sections";
+import { SITE_NAME } from "@/lib/brand";
 
 /*  THE EVIDENCE PAGE.
  *
@@ -17,7 +18,7 @@ import { SECTIONS, bySlug, hrefOf } from "@/lib/sections";
 const meta = bySlug("results");
 
 export const metadata: Metadata = {
-  title: "Chutithep Engmahussakul — Quantitative trading research",
+  title: `${SITE_NAME} — Quantitative trading research`,
   description: meta?.blurb,
 };
 

@@ -4,6 +4,7 @@ import { Geist_Mono, Work_Sans } from "next/font/google";
 import { Analytics } from "@/components/analytics";
 import { SiteHeader } from "@/components/site-header";
 import "./globals.css";
+import { SITE_NAME } from "@/lib/brand";
 
 /*  Same two faces as Strategy Lab: Work Sans for prose, Geist Mono for
     anything numeric or label-like, so a figure here and the same figure in
@@ -12,7 +13,7 @@ const workSans = Work_Sans({ variable: "--font-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Chutithep Engmahussakul — Quant Strategy Research",
+  title: `${SITE_NAME} — Quant Strategy Research`,
   description:
     "Systematic trading research: documented hypotheses, costs measured at the traded minute, out-of-sample tests, and the tooling that keeps them honest.",
 };

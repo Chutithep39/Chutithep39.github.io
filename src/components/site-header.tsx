@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { SECTIONS, hrefOf } from "@/lib/sections";
+import { SITE_NAME_HEAD, SITE_NAME_TAIL } from "@/lib/brand";
 
 /*  Sticky nav across the real routes.
  *
@@ -27,8 +28,8 @@ export function SiteHeader() {
           className="shrink-0 text-sm font-semibold tracking-tight"
           aria-label="Home"
         >
-          <span className="grad-primary-text">Chutithep</span>
-          <span className="text-muted-foreground"> Engmahussakul</span>
+          <span className="grad-primary-text">{SITE_NAME_HEAD}</span>
+          <span className="text-muted-foreground">{SITE_NAME_TAIL}</span>
         </Link>
 
         <nav

@@ -8,6 +8,7 @@ import { Reveal } from "@/components/reveal";
 import data from "@/data/portfolio99.json";
 import SWEEP from "@/data/sweep-surface.json";
 import { LIVE_SPOKEN, SPAN_SPOKEN } from "@/lib/facts";
+import { SITE_NAME } from "@/lib/brand";
 
 /*  HOME.
  *
@@ -48,7 +49,7 @@ const BENCH = data.benchmark as {
 const BENCH_LIVE = BENCH.by.recent;
 
 export const metadata: Metadata = {
-  title: "Chutithep Engmahussakul — Quantitative trading research",
+  title: `${SITE_NAME} — Quantitative trading research`,
   description:
     "A systematic trading research practice: stated hypotheses, criteria fixed before the data is touched, costs charged at the traded minute, and a held-out window scored once.",
 };

@@ -5,11 +5,12 @@ import { CaseStudyView } from "@/components/case-study";
 import { PageShell } from "@/components/page-shell";
 import { CASE_STUDIES } from "@/data/case-studies";
 import { bySlug } from "@/lib/sections";
+import { SITE_NAME } from "@/lib/brand";
 
 const meta = bySlug("kill-log");
 
 export const metadata: Metadata = {
-  title: `${meta?.label} — Chutithep Engmahussakul`,
+  title: `${meta?.label} — ${SITE_NAME}`,
   description: meta?.blurb,
 };
 

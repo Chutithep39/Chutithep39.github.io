@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { Reveal } from "@/components/reveal";
 import { SECTIONS, bySlug, hrefOf } from "@/lib/sections";
+import { SITE_NAME } from "@/lib/brand";
 
 /*  THE TOOL, IN FOUR SCREENS.
  *
@@ -18,7 +19,7 @@ import { SECTIONS, bySlug, hrefOf } from "@/lib/sections";
 const meta = bySlug("strategy-lab")!;
 
 export const metadata: Metadata = {
-  title: "Strategy Lab — Chutithep Engmahussakul",
+  title: `Strategy Lab — ${SITE_NAME}`,
   description: meta.blurb,
 };
 

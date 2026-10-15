@@ -3,6 +3,7 @@
 import Script from "next/script";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
+import { GOATCOUNTER_ENDPOINT } from "@/lib/brand";
 
 /*  GoatCounter.
  *
@@ -19,7 +20,7 @@ import { useEffect, useRef } from "react";
  *  The query string is sent along deliberately: the "?ref=" tag on a link is
  *  the whole point of having this.
  */
-const ENDPOINT = "https://chutithep.goatcounter.com/count";
+const ENDPOINT = GOATCOUNTER_ENDPOINT;
 
 declare global {
   interface Window {
@@ -43,6 +44,7 @@ export function Analytics() {
     });
   }, [path]);
 
+  if (!ENDPOINT) return null;     // no counter configured for this build (anonymous mirror)
   return (
     <Script
       data-goatcounter={ENDPOINT}
