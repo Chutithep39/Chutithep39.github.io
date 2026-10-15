@@ -82,10 +82,34 @@ def closed_trades_only() -> None:
 
     original = PSIM._run_strategy_trades
 
+    #  ⚠ THE REASON LABEL IS NOT ENOUGH. Only RBO-style engines say
+    #  "end_of_data"; Weak Close / Orderly Dip book a position the bars ran out
+    #  on as `close_all` at the lake's LAST bar (13 Oct 2026: both "closed" at
+    #  01:08 — the minute the refresh ran — while still open in reality). So a
+    #  trade whose exit IS the symbol's last bar in the lake is treated as open
+    #  too. A real exit landing on that exact minute only waits one refresh.
+    last_bar: dict = {}
+
+    def _lake_end(symbol: str):
+        if symbol not in last_bar:
+            try:
+                ix = pd.read_parquet(LAB / "data" / "raw" / f"{symbol}.parquet", columns=["close"]).index
+                last_bar[symbol] = pd.Timestamp(ix.max()).tz_localize(None) if ix.tz is None \
+                    else pd.Timestamp(ix.max()).tz_convert(None)
+            except Exception:  # noqa: BLE001
+                last_bar[symbol] = None
+        return last_bar[symbol]
+
     def patched(*a, **k):
         tr = original(*a, **k)
         if tr is not None and len(tr) and "exit_reason" in tr.columns:
             open_rows = tr["exit_reason"].astype(str).eq("end_of_data")
+            profile = a[0] if a else k.get("profile") or {}
+            end = _lake_end(profile.get("symbol", "")) if isinstance(profile, dict) else None
+            if end is not None and "exit_time" in tr.columns:
+                xt = pd.to_datetime(tr["exit_time"])
+                xt = xt.dt.tz_convert(None) if xt.dt.tz is not None else xt
+                open_rows |= (xt >= end).to_numpy()
             if open_rows.any():
                 tr = tr[~open_rows]
         return tr
