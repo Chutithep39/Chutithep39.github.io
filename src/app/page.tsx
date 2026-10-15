@@ -80,9 +80,9 @@ function Hero() {
         <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
           Quantitative trading research
         </p>
-        <h1 className="mt-5 max-w-[16ch] text-[clamp(2.6rem,6vw,4.4rem)] font-semibold leading-[0.98] tracking-[-0.03em] text-balance">
-          A research practice,{" "}
-          <span className="grad-primary-text">built to survive scrutiny.</span>
+        <h1 className="mt-5 max-w-[18ch] text-[clamp(2.6rem,6vw,4.4rem)] font-semibold leading-[0.98] tracking-[-0.03em] text-balance">
+          Data analyst by trade.{" "}
+          <span className="grad-primary-text">Quant researcher by passion.</span>
         </h1>
         <p className="mt-7 max-w-[62ch] text-[17px] leading-relaxed text-muted-foreground">
           I build and evaluate systematic trading strategies end to end — from
