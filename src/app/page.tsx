@@ -85,9 +85,9 @@ function Hero() {
           <span className="grad-primary-text">Quant researcher by passion.</span>
         </h1>
         <p className="mt-7 max-w-[62ch] text-[17px] leading-relaxed text-muted-foreground">
-          This site is the public record of my trading research: the strategies
-          running live and how they are performing, the evidence each one had to
-          pass before it went in, and the ideas that failed and were dropped.
+          This site demonstrates how I find an edge in the market: how an idea
+          becomes a testable hypothesis, how it is measured on real costs and on
+          data it has never seen, and which strategies survived to trade live.
         </p>
 
         <Pipeline />
@@ -246,12 +246,12 @@ const PRINCIPLES = [
     p: "Time zones, daylight-saving shifts and the real spread at each traded minute are checked first. A clean-looking result on dirty data is the most expensive mistake.",
   },
   {
-    h: "Segment, then validate",
-    p: "Results are cut by year, regime and instrument, and must hold on data the test never saw: the same discipline as checking an A/B test beyond launch week.",
+    h: "Segment and drill down",
+    p: "Results are cut by year, regime and instrument to find where the edge lives and where it does not: the same drill-down as explaining a move in a KPI.",
   },
   {
-    h: "Monitor against a baseline",
-    p: "Live trades are tracked against the backtest in dashboards, so drift shows up as a number before it shows up as a loss.",
+    h: "Validate it statistically",
+    p: "Every edge has to pass significance tests, hold on out-of-sample and hold-out data, and beat a no-edge baseline, so luck is never mistaken for skill.",
   },
 ];
 
