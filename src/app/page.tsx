@@ -85,9 +85,9 @@ function Hero() {
           <span className="grad-primary-text">Quant researcher by passion.</span>
         </h1>
         <p className="mt-7 max-w-[62ch] text-[17px] leading-relaxed text-muted-foreground">
-          I build and evaluate systematic trading strategies end to end — from
-          hypothesis and mechanism to statistical testing, backtesting,
-          out-of-sample validation, portfolio fit, and live deployment.
+          This site is the public record of my trading research: the strategies
+          running live and how they are performing, the evidence each one had to
+          pass before it went in, and the ideas that failed and were dropped.
         </p>
 
         <Pipeline />
@@ -238,20 +238,20 @@ function SectionHead({
 
 const PRINCIPLES = [
   {
-    h: "Hypothesis-driven",
-    p: "Start from a mechanism — why the behaviour should exist — and write down what would falsify it.",
+    h: "Define the metric first",
+    p: "Like any KPI, every idea starts with a precise definition: what is measured, over which window, and what result would prove it wrong. It is written down before the data is opened.",
   },
   {
-    h: "Criteria fixed first",
-    p: "Pass/fail thresholds are set before the data is touched, so a result cannot be re-framed into a pass.",
+    h: "Data quality before analysis",
+    p: "Time zones, daylight-saving shifts and the real spread at each traded minute are checked first. A clean-looking result on dirty data is the most expensive mistake.",
   },
   {
-    h: "Costs at the traded minute",
-    p: "Spread and commission are charged on the bar the trade actually fills, not added afterwards as a flat haircut.",
+    h: "Segment, then validate",
+    p: "Results are cut by year, regime and instrument, and must hold on data the test never saw: the same discipline as checking an A/B test beyond launch week.",
   },
   {
-    h: "Portfolio fit decides",
-    p: "A strategy has to improve the book. Standalone performance that duplicates risk already held is a kill.",
+    h: "Monitor against a baseline",
+    p: "Live trades are tracked against the backtest in dashboards, so drift shows up as a number before it shows up as a loss.",
   },
 ];
 
