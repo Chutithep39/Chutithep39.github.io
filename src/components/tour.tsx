@@ -119,6 +119,10 @@ export function Tour({
   useEffect(() => {
     const id = requestAnimationFrame(() => {
       try {
+        //  Not on a phone: there the card covers most of the screen, so a
+        //  first-time reader lands on a dialog instead of the page. The
+        //  button below still offers it.
+        if (window.innerWidth < 640) return;
         if (!localStorage.getItem(storageKey)) setOpen(true);
       } catch {
         /* private mode — just don't run */
@@ -165,7 +169,18 @@ export function Tour({
     //  mid-flight puts the hole off-screen.
     let stop = 0;
     const t = setTimeout(() => {
-      find()?.scrollIntoView({ block: "center", behavior: "smooth" });
+      //  On a phone the card is a sheet along the bottom, so the target goes
+      //  to the TOP (under the sticky header) rather than the middle, where
+      //  the sheet would cover it.
+      const el = find();
+      if (el && window.innerWidth < 640) {
+        window.scrollTo({
+          top: el.getBoundingClientRect().top + window.scrollY - 72,
+          behavior: "smooth",
+        });
+      } else {
+        el?.scrollIntoView({ block: "center", behavior: "smooth" });
+      }
       measure();
       const until = Date.now() + 1200;
       const tick = () => {
@@ -216,9 +231,14 @@ export function Tour({
           setI(0);
           setOpen(true);
         }}
-        className="fixed bottom-5 right-5 z-40 rounded-full border border-border bg-card/90 px-4 py-2 text-[12px] text-muted-foreground shadow-lg backdrop-blur transition-colors hover:text-foreground"
+        aria-label={label}
+        title={label}
+        className="fixed bottom-4 right-4 z-40 grid h-9 w-9 place-items-center rounded-full border border-border bg-card/90 text-[14px] text-muted-foreground shadow-lg backdrop-blur transition-colors hover:text-foreground sm:bottom-5 sm:right-5 sm:h-auto sm:w-auto sm:px-4 sm:py-2 sm:text-[12px]"
       >
-        {label}
+        {/*  On a phone the full pill sat over the text it was floating above;
+            there it shrinks to a "?" and keeps its name for screen readers. */}
+        <span aria-hidden className="sm:hidden">?</span>
+        <span className="hidden sm:inline">{label}</span>
       </button>
     );
   }
@@ -236,14 +256,19 @@ export function Tour({
   const GAP = 16;
   const below = box ? box.top + box.height + GAP : 0;
   const above = box ? box.top - cardH - GAP : 0;
-  const top = !box
+  const phone = vw < 640;
+  const top = phone
+    ? vh - cardH - GAP
+    : !box
     ? vh / 2 - cardH / 2
     : below + cardH + GAP <= vh
       ? below
       : above >= GAP
         ? above
         : Math.max(GAP, vh - cardH - GAP);
-  const left = box
+  const left = phone
+    ? GAP
+    : box
     ? Math.min(Math.max(16, box.left + box.width / 2 - TW / 2), vw - TW - 16)
     : vw / 2 - TW / 2;
 
@@ -296,8 +321,8 @@ export function Tour({
 
       <div
         ref={card}
-        className="absolute w-[360px] rounded-xl border border-border bg-card p-5 shadow-2xl transition-all duration-300"
-        style={{ top, left }}
+        className="absolute rounded-xl border border-border bg-card p-5 shadow-2xl transition-all duration-300"
+        style={{ top, left, width: phone ? vw - GAP * 2 : TW }}
       >
         <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
           {i + 1} of {steps.length}

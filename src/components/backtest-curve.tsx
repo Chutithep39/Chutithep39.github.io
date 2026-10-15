@@ -1,4 +1,7 @@
+"use client";
+
 import data from "@/data/backtest.json";
+import { useNarrow } from "@/lib/use-narrow";
 
 /*  The rule, traded. Cumulative net return, one step per trade.
  *
@@ -36,15 +39,18 @@ const D = data as {
   curve: { d: string | null; v: number }[];
 };
 
-const W = 900;
-const H = 330;
-const PAD = { t: 26, r: 120, b: 22, l: 54 };
+const PAD_WIDE = { t: 26, r: 120, b: 22, l: 54 };
 const r2 = (n: number) => Math.round(n * 100) / 100;
 
 const FITTED = "var(--chart-2)";
 const HELD = "var(--chart-1)";
 
 export function BacktestCurve() {
+  //  Phone: a narrower drawing, so its labels stay legible.
+  const narrow = useNarrow();
+  const W = narrow ? 520 : 900;
+  const H = narrow ? 300 : 330;
+  const PAD = narrow ? { ...PAD_WIDE, r: 80, l: 44 } : PAD_WIDE;
   const pts = D.curve;
   const splitAt = pts.findIndex((p) => p.d !== null && p.d >= D.split);
   const vs = pts.map((p) => p.v);

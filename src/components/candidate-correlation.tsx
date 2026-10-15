@@ -44,17 +44,18 @@ export function CandidateCorrelation() {
 
   return (
     <section className="mt-6">
-      <div className="overflow-x-auto rounded-xl border border-border bg-card p-4">
-        <table className="w-full min-w-[620px] border-separate border-spacing-1 font-mono text-[11px] tabular-nums">
+      <div className="overflow-x-auto rounded-xl border border-border bg-card p-1 sm:p-4">
+        {/*  Phone: letters only in the row headers so the grid fits. */}
+        <table className="w-full border-separate border-spacing-px font-mono text-[9.5px] tabular-nums sm:min-w-[620px] sm:border-spacing-1 sm:text-[11px]">
           <thead>
             <tr>
-              <th className="w-28" />
+              <th className="sm:w-28" />
               {D.labels.map((_, i) => (
                 <th
                   key={i}
                   scope="col"
                   className={[
-                    "px-1 pb-1 text-center font-normal",
+                    "px-0 pb-1 text-center font-normal sm:px-1",
                     i === K ? "text-foreground" : "",
                   ].join(" ")}
                   style={i === K ? undefined : { color: hueOf(i) }}
@@ -70,7 +71,7 @@ export function CandidateCorrelation() {
                 <th
                   scope="row"
                   className={[
-                    "whitespace-nowrap pr-2 text-right font-normal",
+                    "whitespace-nowrap pr-1 text-right font-normal sm:pr-2",
                     r === K ? "text-foreground" : "text-muted-foreground",
                   ].join(" ")}
                 >
@@ -78,8 +79,8 @@ export function CandidateCorrelation() {
                     CAND
                   ) : (
                     <>
-                      <span style={{ color: hueOf(r) }}>{letterOf(r)}</span>{" "}
-                      {marketOf(LEGS[r])}
+                      <span style={{ color: hueOf(r) }}>{letterOf(r)}</span>
+                      <span className="hidden sm:inline"> {marketOf(LEGS[r])}</span>
                     </>
                   )}
                 </th>
@@ -101,7 +102,7 @@ export function CandidateCorrelation() {
                             }`
                       }
                       className={[
-                        "rounded px-1 py-1.5 text-center",
+                        "rounded px-0 py-1.5 text-center sm:px-1",
                         //  The pair that kills the candidate. Pulsed once, on
                         //  arrival, because a reader scanning an 81-cell grid
                         //  has no way to know which two cells the paragraph

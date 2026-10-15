@@ -19,6 +19,8 @@ export type Section = {
   /** Where the section actually lives. Only set when it is not `/<slug>`. */
   href?: string;
   label: string;
+  /** Phone-width nav label; the full one does not fit four across at 390px. */
+  short?: string;
   /** Says which question the page answers. Shown as the eyebrow. */
   eyebrow: string;
   /** One line, shown on the home index. */
@@ -39,6 +41,7 @@ export const SECTIONS: Section[] = [
   {
     slug: "results",
     label: "Portfolio Performance",
+    short: "Performance",
     eyebrow: "Quantitative trading, 2018-2026",
     blurb:
       `Performance of a portfolio of ${word(MEMBERS)} uncorrelated strategies across ${word(INSTRUMENTS)} instruments, sized at fixed risk based on ${money(START)} initial capital, split into fitted in-sample, out-of-sample, and live.`,
@@ -47,6 +50,7 @@ export const SECTIONS: Section[] = [
   {
     slug: "kill-log",
     label: "How I research my strategies",
+    short: "Research",
     eyebrow: "One candidate, written up in full",
     blurb:
       "From formulating the hypothesis, defining the metrics, conducting analysis, to backtesting, robustness test, and correlation analysis.",
@@ -55,6 +59,7 @@ export const SECTIONS: Section[] = [
   {
     slug: "strategy-lab",
     label: "Strategy Lab",
+    short: "Lab",
     eyebrow: "The tooling behind the research",
     blurb:
       "The backtest engine, data lake and dashboard I built to run the process — from the raw minute data through to a portfolio sized against one drawdown budget.",

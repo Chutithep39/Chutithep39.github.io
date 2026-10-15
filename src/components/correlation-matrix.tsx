@@ -49,11 +49,13 @@ export function CorrelationMatrix() {
         decides whether these can share one balance.
       </p>
 
-      <div className="mt-3 overflow-x-auto rounded-xl border border-border bg-card p-4">
-        <table className="w-full min-w-[520px] border-separate border-spacing-1 font-mono text-[11px] tabular-nums">
+      <div className="mt-3 overflow-x-auto rounded-xl border border-border bg-card p-1.5 sm:p-4">
+        {/*  On a phone the row names go and only the letters stay, so the
+            whole grid fits the screen; the key below the table names them. */}
+        <table className="w-full border-separate border-spacing-0.5 font-mono text-[10px] tabular-nums sm:min-w-[520px] sm:border-spacing-1 sm:text-[11px]">
           <thead>
             <tr>
-              <th className="w-24" />
+              <th className="sm:w-24" />
               {LEGS.map((leg, i) => (
                 <th
                   key={i}
@@ -71,10 +73,10 @@ export function CorrelationMatrix() {
               <tr key={r}>
                 <th
                   scope="row"
-                  className="whitespace-nowrap pr-2 text-right font-normal text-muted-foreground"
+                  className="whitespace-nowrap pr-1 text-right font-normal text-muted-foreground sm:pr-2"
                 >
-                  <span style={{ color: hueOf(r) }}>{letterOf(r)}</span>{" "}
-                  {marketOf(leg)}
+                  <span style={{ color: hueOf(r) }}>{letterOf(r)}</span>
+                  <span className="hidden sm:inline"> {marketOf(leg)}</span>
                 </th>
                 {Array.from({ length: n }, (_, c) => {
                   //  The diagonal is 1 by construction and carries no
@@ -96,7 +98,7 @@ export function CorrelationMatrix() {
                             }`
                       }
                       className={[
-                        "rounded px-1 py-1.5 text-center",
+                        "rounded px-0 py-1.5 text-center sm:px-1",
                         self ? "text-muted-foreground/50" : "text-foreground",
                         //  The two halves are different measurements, and a
                         //  reader scanning the grid has to be able to tell
@@ -120,6 +122,14 @@ export function CorrelationMatrix() {
           </tbody>
         </table>
       </div>
+
+      <p className="mt-2 font-mono text-[11px] leading-relaxed text-muted-foreground sm:hidden">
+        {LEGS.map((leg, i) => (
+          <span key={i} className="mr-3 inline-block">
+            <span style={{ color: hueOf(i) }}>{letterOf(i)}</span> {marketOf(leg)}
+          </span>
+        ))}
+      </p>
 
       <p className="mt-3 max-w-3xl text-[12px] leading-relaxed text-muted-foreground">
         Pearson correlation of the pair&rsquo;s daily P&amp;L, so it reads

@@ -1,4 +1,7 @@
+"use client";
+
 import data from "@/data/baseline.json";
+import { useNarrow } from "@/lib/use-narrow";
 
 /*  The hypothesis, drawn directly: today's move on the category axis, the
  *  average return of the NEXT day as the bar.
@@ -40,8 +43,6 @@ const LABEL = "NASDAQ";
 const S = D.symbols[SYM];
 const C = S.conditional;
 
-const W = 900;
-const H = 420;
 const PAD = { t: 40, r: 30, b: 72, l: 30 };
 const r2 = (n: number) => Math.round(n * 100) / 100;
 
@@ -58,6 +59,19 @@ const UP = "var(--chart-2)";
 const DOWN = "var(--chart-4)";
 
 export function BaselineHistogram() {
+  //  Phone: a narrower drawing with larger type and compact bucket labels.
+  const narrow = useNarrow();
+  const W = narrow ? 520 : 900;
+  const H = narrow ? 400 : 420;
+  const fs = (n: number) => String(narrow ? Math.round(n * 1.25) : n);
+  const tick = (b: Bin) =>
+    !narrow
+      ? bucketLabel(b)
+      : b.lo === null
+        ? `≤${b.hi}`
+        : b.hi === null
+          ? `≥${b.lo}`
+          : `${b.lo}/${b.hi}`;
   const bins = C.bins;
   const top = Math.max(...bins.map((b) => b.mean_pct), 0);
   const bot = Math.min(...bins.map((b) => b.mean_pct), 0);
@@ -95,7 +109,7 @@ export function BaselineHistogram() {
             x={PAD.l}
             y={PAD.t - 16}
             className="font-mono"
-            fontSize="13"
+            fontSize={fs(13)}
             fontWeight={700}
             fill="var(--muted-foreground)"
           >
@@ -128,7 +142,7 @@ export function BaselineHistogram() {
                   className={["fade-late font-mono", tail ? "flare" : ""]
                     .join(" ")
                     .trim()}
-                  fontSize={tail ? "15" : "13"}
+                  fontSize={tail ? fs(15) : fs(13)}
                   fontWeight={tail ? 700 : 400}
                   fill={up ? UP : DOWN}
                   style={{ color: up ? UP : DOWN }}
@@ -144,10 +158,10 @@ export function BaselineHistogram() {
                   y={H - PAD.b + 22}
                   textAnchor="middle"
                   className="font-mono"
-                  fontSize="12"
+                  fontSize={narrow ? "11" : "12"}
                   fill="var(--muted-foreground)"
                 >
-                  {bucketLabel(b)}
+                  {tick(b)}
                 </text>
               </g>
             );
@@ -179,7 +193,7 @@ export function BaselineHistogram() {
             y={H - PAD.b + 44}
             textAnchor="end"
             className="font-mono"
-            fontSize="13"
+            fontSize={fs(13)}
             fontWeight={700}
             fill="var(--muted-foreground)"
           >

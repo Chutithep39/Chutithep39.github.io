@@ -261,8 +261,21 @@ export function EquityCurve() {
     };
   }, [on, curve, mode]);
 
-  const W = 1000;
-  const H = 340;
+  /*  A phone gets its own, narrower drawing instead of the desktop one
+      behind a sideways scroll: at 390px the old min-width showed 2018-2022
+      and hid the out-of-sample and live years off to the right, where nobody
+      thought to swipe. Starts wide so the static HTML and the first client
+      render agree, then switches after mount.                            */
+  const [narrow, setNarrow] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 639px)");
+    const set = () => setNarrow(mq.matches);
+    set();
+    mq.addEventListener("change", set);
+    return () => mq.removeEventListener("change", set);
+  }, []);
+  const W = narrow ? 460 : 1000;
+  const H = narrow ? 320 : 340;
   const PAD = { t: 14, r: 16, b: 26, l: 62 };
 
   /*  Hover read-out. The indices are into `view.flat`, which is rebuilt
@@ -388,9 +401,9 @@ export function EquityCurve() {
       if (d >= view.x0 && d <= view.x1) out.push({ d, y });
     }
     //  Thin the labels on a long window so they never collide.
-    const step = Math.ceil(out.length / 10);
+    const step = Math.ceil(out.length / (narrow ? 5 : 10));
     return out.filter((_, i) => i % step === 0);
-  }, [view]);
+  }, [view, narrow]);
 
   const clamp = (v: number, lo: number, hi: number) =>
     Math.min(Math.max(v, lo), hi);
@@ -601,7 +614,7 @@ export function EquityCurve() {
             onPointerMove={onMove}
             onPointerLeave={() => setHit(null)}
             viewBox={`0 0 ${W} ${H}`}
-            className="block h-auto w-full min-w-[640px]"
+            className="block h-auto w-full"
             role="img"
             aria-label="Backtested equity curve of research portfolio 99, fixed position size, linear scale"
           >
