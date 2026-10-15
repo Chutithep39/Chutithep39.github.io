@@ -81,7 +81,7 @@ function Hero() {
           Quantitative trading research
         </p>
         <h1 className="mt-5 max-w-[18ch] text-[clamp(2.6rem,6vw,4.4rem)] font-semibold leading-[0.98] tracking-[-0.03em] text-balance">
-          Data analyst by trade.{" "}
+          Data analyst by experience.{" "}
           <span className="grad-primary-text">Quant researcher by passion.</span>
         </h1>
         <p className="mt-7 max-w-[62ch] text-[17px] leading-relaxed text-muted-foreground">
