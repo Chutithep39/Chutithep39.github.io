@@ -18,3 +18,6 @@ export const GOATCOUNTER_ENDPOINT = process.env.NEXT_PUBLIC_GOATCOUNTER?.trim() 
 
 /** Microsoft Clarity project id, or "" for none. Loaded only after the visitor accepts (see clarity.tsx). */
 export const CLARITY_ID = process.env.NEXT_PUBLIC_CLARITY?.trim() || "";
+
+/** Public origin of this build (for absolute link-preview URLs), e.g. https://example.github.io */
+export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://quant-research-notes.github.io";

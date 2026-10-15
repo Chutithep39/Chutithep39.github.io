@@ -5,7 +5,7 @@ import { Analytics } from "@/components/analytics";
 import { Clarity } from "@/components/clarity";
 import { SiteHeader } from "@/components/site-header";
 import "./globals.css";
-import { SITE_NAME } from "@/lib/brand";
+import { SITE_NAME, SITE_URL } from "@/lib/brand";
 
 /*  Same two faces as Strategy Lab: Work Sans for prose, Geist Mono for
     anything numeric or label-like, so a figure here and the same figure in
@@ -14,6 +14,14 @@ const workSans = Work_Sans({ variable: "--font-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
+  //  Link preview (Facebook, LinkedIn, Line, X). One card, no name on it: public/og.png.
+  openGraph: {
+    type: "website",
+    siteName: SITE_NAME,
+    images: [{ url: "/og.png", width: 1200, height: 630, alt: "Data analyst by experience. Quant researcher by passion." }],
+  },
+  twitter: { card: "summary_large_image", images: ["/og.png"] },
   title: `${SITE_NAME} — Quant Strategy Research`,
   description:
     "Systematic trading research: documented hypotheses, costs measured at the traded minute, out-of-sample tests, and the tooling that keeps them honest.",
