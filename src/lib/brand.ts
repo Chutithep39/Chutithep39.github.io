@@ -15,3 +15,6 @@ export const SITE_NAME_TAIL = SITE_NAME.slice(SITE_NAME_HEAD.length);
 
 /** GoatCounter count endpoint, or "" to load no analytics at all. */
 export const GOATCOUNTER_ENDPOINT = process.env.NEXT_PUBLIC_GOATCOUNTER?.trim() || "";
+
+/** Microsoft Clarity project id, or "" for none. Loaded only after the visitor accepts (see clarity.tsx). */
+export const CLARITY_ID = process.env.NEXT_PUBLIC_CLARITY?.trim() || "";

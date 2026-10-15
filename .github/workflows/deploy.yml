@@ -36,6 +36,7 @@ jobs:
           #  Personal repo: SITE_NAME + GOATCOUNTER set. Anonymous mirror: leave both unset.
           NEXT_PUBLIC_SITE_NAME: ${{ vars.SITE_NAME }}
           NEXT_PUBLIC_GOATCOUNTER: ${{ vars.GOATCOUNTER }}
+          NEXT_PUBLIC_CLARITY: ${{ vars.CLARITY }}
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

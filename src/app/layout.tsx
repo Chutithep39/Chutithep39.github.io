@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist_Mono, Work_Sans } from "next/font/google";
 
 import { Analytics } from "@/components/analytics";
+import { Clarity } from "@/components/clarity";
 import { SiteHeader } from "@/components/site-header";
 import "./globals.css";
 import { SITE_NAME } from "@/lib/brand";
@@ -33,6 +34,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           {children}
         </main>
         <Analytics />
+        <Clarity />
       </body>
     </html>
   );
