@@ -45,19 +45,19 @@ export const SECTIONS: Section[] = [
     ready: true,
   },
   {
-    slug: "strategy-lab",
-    label: "Strategy Lab",
-    eyebrow: "The tooling behind the research",
-    blurb:
-      "The backtest engine, data lake and dashboard I built to run the process — from the raw minute data through to a portfolio sized against one drawdown budget.",
-    ready: true,
-  },
-  {
     slug: "kill-log",
     label: "How I research my strategies",
     eyebrow: "One candidate, written up in full",
     blurb:
       "From formulating the hypothesis, defining the metrics, conducting analysis, to backtesting, robustness test, and correlation analysis.",
+    ready: true,
+  },
+  {
+    slug: "strategy-lab",
+    label: "Strategy Lab",
+    eyebrow: "The tooling behind the research",
+    blurb:
+      "The backtest engine, data lake and dashboard I built to run the process — from the raw minute data through to a portfolio sized against one drawdown budget.",
     ready: true,
   },
 ];
