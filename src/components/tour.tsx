@@ -85,9 +85,9 @@ export const RESULTS_STEPS: Step[] = [
   },
   {
     target: "next",
-    title: "And what produced all of it",
+    title: "Next: how one strategy was researched",
     body:
-      "The tool behind these numbers — the data lake, the engine, the parameter search and the portfolio optimiser, in four screens. The full write-up of one candidate follows it.",
+      "The next page follows one candidate end to end: hypothesis, metrics, analysis, backtest, robustness and correlation, kill included. Strategy Lab, the tool that produced these numbers, comes after it.",
     mode: "combined",
   },
 ];

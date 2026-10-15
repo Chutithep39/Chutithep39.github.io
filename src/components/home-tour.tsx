@@ -23,7 +23,7 @@ const STEPS: Step[] = [
     target: "nav",
     title: "Four pages, four questions",
     body:
-      "Portfolio Performance is the evidence — the equity curve, the cost table and the correlations, all interactive. Strategy Lab is the tool that produced them. How I research my strategies is one candidate followed end to end, kill included.",
+      "Portfolio Performance is the evidence — the equity curve, the cost table and the correlations, all interactive. How I research my strategies is one candidate followed end to end, kill included. Strategy Lab is the tool that produced them.",
   },
   {
     target: "surface",
